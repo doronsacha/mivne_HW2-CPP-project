@@ -3,7 +3,6 @@
 
 int main()
 {
-    //this is just for the test
     dynamicArray<int> arr(4, -1);
     arr.push(1);
     arr.push(72);
