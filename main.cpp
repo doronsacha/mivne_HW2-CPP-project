@@ -26,6 +26,7 @@ int main()
         cout<< arr[index]<< endl;
     }
     */
+
     dynamicArray<int*> arr(4, nullptr);
     int a=9,b=2;
     arr.push(&a);
