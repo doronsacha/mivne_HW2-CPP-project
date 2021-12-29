@@ -3,94 +3,88 @@
 
 #define POSSIBLE_SIZES 28
 #include <iostream>
-using namespace  std;
 
+using namespace  std;
+template <class S>
+/*
+     * this function help to find the default null of the type T
+     */
+
+S return_null()
+{
+    S* nu= new S[1](); // create an array using the default constructor
+    S absolut_null=nu[0]; // get the default value of T
+    delete []nu;
+    return absolut_null;
+}
+//this dynamic array can have only size of prime numbers
 template<class T>
 class dynamicArray
 {
 private:
-    T* arr;
+    T* array;
     int size;
-    int possible_sizes[POSSIBLE_SIZES];
+    int prime_possible_sizes[POSSIBLE_SIZES];
     int number_of_element;
-    T null_element;// the default null element
 public:
-    dynamicArray(int i, T default_null)
+    dynamicArray(int length)
     {
-        if (i <= 0) {
-            cout << "cannot create an empty or negative input";
-            exit(0);
-        }
         init_prime();
-        int currect_size = find_upper(i);
-        arr = new T[currect_size](); //initialize all the values to be the null value;
-        size =currect_size;
+        int current_size = find_upper(length);
+        array = new T[current_size](); //initialize all the values to be the null value;
+        size =current_size;
         number_of_element = 0;
-        null_element = default_null;
     }
+    //this function find the nearest prime from length in the array of prime numbers
     int find_upper(int i)
     {
-        int res;
-        for(auto el:possible_sizes)
+        int result=0;
+        for(auto element:prime_possible_sizes)
         {
-            if (el > i)
+            if (element > i)
             {
-                res =el;
+                result = element;
                 break;
             }
         }
-        return res;
+        return result;
     }
+    // this function help for initialize the array of prime number of the class
     void init_prime()
     {
-        possible_sizes[0]=13;
-        possible_sizes[1]=29;
-        possible_sizes[2]=53;
-        possible_sizes[3]=97;
-        possible_sizes[4]=193;
-        possible_sizes[5]=389;
-        possible_sizes[6]=769;
-        possible_sizes[7]=1543;
-        possible_sizes[8]=3079;
-        possible_sizes[9]=6151;
-        possible_sizes[10]=12289;
-        possible_sizes[11]=24593;
-        possible_sizes[12]=49157;
-        possible_sizes[13]=98317;
-        possible_sizes[14]=196613;
-        possible_sizes[15]=393241;
-        possible_sizes[16]=786433;
-        possible_sizes[17]=1572869;
-        possible_sizes[18]=3145739;
-        possible_sizes[19]=6291469;
-        possible_sizes[20]=12582917;
-        possible_sizes[21]=25165843;
-        possible_sizes[22]=50331653;
-        possible_sizes[23]=100663319;
-        possible_sizes[24]=201326611;
-        possible_sizes[25]=402653189;
-        possible_sizes[26]=805306457;
-        possible_sizes[27]=1610612741;
+        int prime[POSSIBLE_SIZES]={13,29,53,97,193,389,769,1543,3079,6151,12289,24593,49157,98317,
+                                196613,393241,786433,1572869,3145739,6291469,12582917,25165843,50331653,100663319,
+                                201326611,402653189,805306457,1610612741};
+        for(int i=0;i<POSSIBLE_SIZES;i++)
+        {
+            prime_possible_sizes[i]=prime[i];
+        }
     }
     ~dynamicArray()
     {
-        delete []arr;
+        delete []array;
     };
 
-
-    T& operator[](int index)
+    /*
+     * this function help to find the default null of the type T
+     */
+    T return_null()
     {
-        if(index > size)
-        {
-            cout << " Array index out of bound !!!";
-            exit(0);
-        }
-        if(arr[index] == null_element)
-        {
-            return null_element;
-        }
-        return *(arr+index);
+        T* nu= new T[1](); // create an array using the default constructor
+        T absolut_null=nu[0]; // get the default value of T
+        delete []nu;
+        return absolut_null;
     }
+
+    T operator[](int index)
+    {
+        if(array[index] == return_null())
+        {
+            return return_null();
+        }
+        return *(array+index);
+    }
+
     /*
     dynamicArray(dynamicArray& other)
     {
@@ -104,49 +98,43 @@ public:
         number_of_element= other.number_of_element;
     };
     */
-    void push(T insert)
-    {
-        if((size/2)<number_of_element)
-        {
-            resize();
-        }
-        arr[number_of_element] = insert;
-        number_of_element++;
-    }
+
     void resize()
     {
-        int new_size=find_next();
+        int new_size= find_next();
         T* new_arr= new T[new_size]();
-        for(int i=0; i<size; i++)
+        int j=0;
+        for(  j ; j<size; j++)
         {
-            new_arr[i]=arr[i];
+            new_arr[j]=array[j];
         }
-        delete []arr;
-        arr= new_arr;
+        delete []array;
+        array= new_arr;
         size=new_size;
     }
 
     void set(int index, T value)
     {
-        if(arr[index] != null_element)
+        if(array[index] != return_null())
         {
-            return ;
+            return ; //error to throw
         }
         if((size/2)<number_of_element)
         {
             resize();
         }
         number_of_element++;
-        arr[index] = value;
+        array[index] = value;
     }
+
     int find_next()
     {
         int new_size;
         for (int i=0; i<POSSIBLE_SIZES ; i++)
         {
-            if(possible_sizes[i]==size)
+            if(prime_possible_sizes[i]==size)
             {
-                new_size=possible_sizes[i+1];
+                new_size= prime_possible_sizes[i+1];
                 break;
             }
         }
@@ -156,7 +144,10 @@ public:
     {
         return size;
     }
-
+    int getNumber_of_element()
+    {
+        return number_of_element;
+    }
 };
 
 #endif //HW2MIVNE_DYNAMICARRAY_H

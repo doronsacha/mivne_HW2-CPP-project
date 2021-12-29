@@ -1,39 +1,25 @@
 #include <iostream>
 # include "dynamicArray.h"
+#include "hashTable.h"
 
 int main()
 {
-    /*
-    dynamicArray<int> arr(4, -1);
-    arr.push(1);
-    arr.push(72);
-    arr.push(9);
-    arr.push(81);
-    arr.push(172);
-    arr.push(169);
-    arr.push(139);
-    arr.push(115);
-    arr.push(65);
-    arr.push(11);
-    arr.push(131);
-    arr.push(178);
-    arr.push(86);
-    arr.push(74);
-    arr.push(135);
-    arr.push(139);
-    for(int index=0; index<16; index++)
-    {
-        cout<< arr[index]<< endl;
-    }
-    */
-
-    dynamicArray<int*> arr(4, nullptr);
-    int a=9,b=2;
-    arr.push(&a);
-    arr.push(&b);
-    for(int index=0; index<2; index++)
-    {
-        cout<< *arr[index]<< endl;
-    }
+    int minus=-1;
+    int a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10,k=11,l=12,m=12,n=13,o=14;
+    hashTable<int*> table(5,&minus);
+    table.insert(2,&a);
+    table.insert(4,&b);
+    table.insert(6,&c);
+    table.insert(10,&d);
+    table.insert(11,&e);
+    table.insert(13,&f);
+    table.insert(15,&g);
+    table.insert(2050,&h);
+    table.insert(88,&i);
+    table.insert(9,&j);
+    table.insert(7,&k);
+    table.insert(854,&l);
+    table.insert(3,&m);
+    table.insert(21,&o);
     return 0;
 }
