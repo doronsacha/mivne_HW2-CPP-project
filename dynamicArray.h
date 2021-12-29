@@ -23,7 +23,7 @@ public:
         arr = new T[i](); //initialize all the values to be the null value;
         size = i ;
         number_of_element=0;
-        null_element= default_null;
+        null_element = default_null;
     };
 
     ~dynamicArray()
