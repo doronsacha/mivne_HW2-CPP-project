@@ -67,18 +67,6 @@ public:
         delete array;
     };
 
-    /*
-     * this function help to find the default null of the type T
-
-    T return_null()
-    {
-        T* nu= new T[1](); // create an array using the default constructor
-        T absolut_null=nu[0]; // get the default value of T
-        delete []nu;
-        return absolut_null;
-    }
-    */
-
     T operator[](int index)
     {
         if(array[index].data == return_null<T>().data)
@@ -87,20 +75,6 @@ public:
         }
         return (*(array+index));
     }
-
-    /*
-    dynamicArray(dynamicArray& other)
-    {
-        delete []arr;
-        arr = new T(other.size);
-        for(int i=0; i< other.size ; i++)
-        {
-            arr[i]=other[i];
-        }
-        size = other.size;
-        number_of_element= other.number_of_element;
-    };
-    */
 
     void resize()
     {
