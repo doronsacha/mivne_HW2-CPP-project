@@ -9,7 +9,6 @@ template <class S>
 /*
      * this function help to find the default null of the type T
      */
-
 S return_null()
 {
     S* nu= new S[1](); // create an array using the default constructor
@@ -17,6 +16,7 @@ S return_null()
     delete []nu;
     return absolut_null;
 }
+
 //this dynamic array can have only size of prime numbers
 template<class T>
 class dynamicArray
@@ -52,8 +52,10 @@ public:
     // this function help for initialize the array of prime number of the class
     void init_prime()
     {
-        int prime[POSSIBLE_SIZES]={13,29,53,97,193,389,769,1543,3079,6151,12289,24593,49157,98317,
-                                196613,393241,786433,1572869,3145739,6291469,12582917,25165843,50331653,100663319,
+        int prime[POSSIBLE_SIZES]={13,29,53,97,193,389,769,1543,
+                                   3079,6151,12289,24593,49157,98317,
+                                196613,393241,786433,1572869,3145739,6291469,
+                                12582917,25165843,50331653,100663319,
                                 201326611,402653189,805306457,1610612741};
         for(int i=0;i<POSSIBLE_SIZES;i++)
         {
@@ -62,12 +64,12 @@ public:
     }
     ~dynamicArray()
     {
-        delete []array;
+        delete array;
     };
 
     /*
      * this function help to find the default null of the type T
-     */
+
     T return_null()
     {
         T* nu= new T[1](); // create an array using the default constructor
@@ -75,14 +77,15 @@ public:
         delete []nu;
         return absolut_null;
     }
+    */
 
     T operator[](int index)
     {
-        if(array[index] == return_null())
+        if(array[index].data == return_null<T>().data)
         {
-            return return_null();
+            return return_null<T>();
         }
-        return *(array+index);
+        return (*(array+index));
     }
 
     /*
@@ -113,9 +116,9 @@ public:
         size=new_size;
     }
 
-    void set(int index, T value)
+    void set(int index, T value , int key)
     {
-        if(array[index] != return_null())
+        if(array[index].data != return_null<T>().data)
         {
             return ; //error to throw
         }
@@ -124,8 +127,17 @@ public:
             resize();
         }
         number_of_element++;
-        array[index] = value;
+        array[index].data = value.data;
+        array[index].key= key;
     }
+
+    void remove(int index, T value , int key)
+    {
+        number_of_element--;
+        array[index].data = value.data;
+        array[index].key= key;
+    }
+
 
     int find_next()
     {
@@ -147,6 +159,14 @@ public:
     int getNumber_of_element()
     {
         return number_of_element;
+    }
+    void remove_element()
+    {
+        number_of_element--;
+    }
+    T* get_the_array()
+    {
+        return array;
     }
 };
 
