@@ -78,11 +78,11 @@ public:
     {
         delete []arr;
     }
-    int insert_position(int id, T data)
+    int insert_position(int id, T data,M* array)
     {
         int index_to_insert= hash(id);
         int k=1; //hash with k =0 upper line
-        M element=arr[index_to_insert];
+        M element=array[index_to_insert];
         while(element != return_null<M>() || element.get_key() == TOMBSTONE)
         {
             if(element != return_null<M>() && element.get_data() == data )
@@ -90,7 +90,7 @@ public:
                 return -1;
             }
             index_to_insert = double_hashing(id,k);
-            element=arr[index_to_insert];
+            element=array[index_to_insert];
             k++;
         }
         return index_to_insert;
@@ -127,7 +127,7 @@ public:
 
     int insert(int id, T data)
     {
-        int index_to_insert= insert_position(id,data);
+        int index_to_insert= insert_position(id,data,arr);
         M new_element = M(id,data);
         set(index_to_insert,new_element,arr);
         number_of_element++;
@@ -145,7 +145,6 @@ public:
         {
             resize();
         }
-        number_of_element++;
     }
 
     int find_next()
@@ -222,7 +221,7 @@ public:
             M element=arr[i];
             if( element.get_data() != return_null<M>().get_data() )
             {
-                int index_to_insert = insert_position(element.get_key(),element.get_data());
+                int index_to_insert = insert_position(element.get_key(),element.get_data(),new_arr);
                 set(index_to_insert,element,new_arr);
             }
         }
@@ -231,7 +230,7 @@ public:
         size=new_size;
     }
 
-    void remove(int id)
+    void remove(int id, int no)
     {
         int index_to_remove= hash(id),k=1;
         M element= arr[index_to_remove];
