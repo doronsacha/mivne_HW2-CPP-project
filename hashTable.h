@@ -138,7 +138,7 @@ public:
     {
         if( array[index] != return_null<M>())
         {
-            return ; //error to throw
+            return ; //error to throw :: there is a problem in
         }
         array[index]=value;
         if(number_of_element>(size/2))
@@ -208,6 +208,7 @@ public:
         array[index]=value;
     }
 
+    /*
     void clean_tombstone()
     {
         int new_size=find_upper(number_of_element);
@@ -219,7 +220,7 @@ public:
                 continue;
             }
             M element=arr[i];
-            if( element.get_data() != return_null<M>().get_data() )
+            if( element.get_data() != return_null<M>().get_data())
             {
                 int index_to_insert = insert_position(element.get_key(),element.get_data(),new_arr);
                 set(index_to_insert,element,new_arr);
@@ -228,7 +229,29 @@ public:
         delete []arr;
         arr = new_arr;
         size=new_size;
+        number_of_tombstone=0;
     }
+*/
+    void clean_tombstone()
+    {
+        M* new_arr=new M[number_of_element]();
+        for (int i=0; i<size; i++)
+        {
+            if (arr[i] == return_null<M>()) {
+                continue;
+            }
+            M element = arr[i];
+            if (element.get_data() != return_null<M>().get_data()) {
+                new_arr[i] = element;
+            }
+        }
+        for(int i=0; i<number_of_element; i++)
+        {
+            insert(new_arr->get_key(),new_arr->get_data());
+        }
+        delete []new_arr;
+    }
+
 
     void remove(int id, int no)
     {
@@ -245,7 +268,7 @@ public:
         number_of_tombstone++;
         number_of_element--;
         /*
-        if(number_of_tombstone > size/2 )//TODO: check what is the number
+        if(number_of_tombstone > size/20 )//TODO: check what is the number
         {
             clean_tombstone();
         }

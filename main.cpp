@@ -5,7 +5,7 @@
 int main()
 {
     hashTable<int> table(3);
-
+/*
     table.insert(3,3);
     table.insert(5,5);
     table.insert(20,20);
@@ -132,6 +132,7 @@ int main()
     table.remove(878690,529484);
     table.remove(236084,45452);
     table.remove(47435,125364);
+    table.clean_tombstone();
     table.remove(121258,150526);
     table.remove(787754,304395);
     table.remove(182433,737185);
@@ -213,5 +214,29 @@ int main()
     table.remove(373502,142278);
     table.remove(513299,980150);
     table.clean_tombstone();
+*/
+    table.insert(2,2);
+    table.insert(3,3);
+    table.insert(4,4);
+    table.insert(5,5);
+    table.insert(6,2);
+    table.insert(7,3);
+    table.insert(8,4);
+    table.insert(9,5);
+    table.insert(10,2);
+    table.insert(11,3);
+    table.insert(12,4);
+    table.insert(13,5);
+    table.clean_tombstone();
+    table.remove(3,3);
+    table.remove(5,5);
+    table.remove(6,2);
+    table.remove(7,3);
+    table.remove(8,4);
+    table.clean_tombstone();
+    table.remove(9,5);
+    table.remove(10,2);
+    table.clean_tombstone();
+
     return 0;
 }
