@@ -1,30 +1,7 @@
-//
-// Created by tsahiedri on 31/12/2021.
-//
-#include <iostream>
-#include "hashTable.h"
-#include <cassert>
-using namespace std;
 
-class Player{
-private:
-    int key;
-    int data;
-public:
-    Player(int key, int data): key(key), data(data) {}
-    int getID()
-    {
-        return key;
-    }
-    int getData()
-    {
-        return data;
-    }
-};
-int main(){
-    Player tomb_player(-1,-1);
-    HashTable<Player*> table(&tomb_player);
-    /** inserting and deleting**/
+
+//TEST 1
+
     Player player0(23,22);
     Player player1(28,79);
     Player player2(18,37);
@@ -327,5 +304,3 @@ int main(){
     table.remove(player97.getID());
     table.remove(player98.getID());
     table.remove(player99.getID());
-    return 0;
-}
