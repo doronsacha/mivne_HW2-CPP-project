@@ -1,102 +1,188 @@
-#ifndef HASH_TABLE_H
-#define HASH_TABLE_H
-#include <iostream>
+#ifndef WET2_HASHTABLE_H
+#define WET2_HASHTABLE_H
 #define POSSIBLE_SIZES 28
-#define TOMBSTONE -1
-
-template <class S>
-S return_null()
-{
-    S* nu= new S[1](); // create an array using the default constructor
-    S absolut_null=nu[0]; // get the default value of T
-    delete []nu;
-    return absolut_null;
-}
+#include <iostream>
+#define NOT_FOUND -1
 
 template<class T>
-class hashTable
-        {
+class HashTable
+{
 private:
-    class M
-    {
-    private:
-        int key;
-        T data;
-    public:
-        M(int k, T d)
-        {
-            key=k;
-            data=d;
-        }
-        M()=default;
-        bool operator !=(M a)
-        {
-            if(a.data==data && a.key==key)
-            {
-                return false;
-            }
-            return true;
-        }
-        bool operator ==(M a)
-        {
-            if(a.key== key && a.data==data)
-            {
-                return true;
-            }
-            return false;
-        }
-        M& operator=(M& other)
-        {
-            key=other.key;
-            data=other.data;
-        }
-        int get_key()
-        {
-            return key;
-        }
-        T get_data()
-        {
-            return data;
-        }
-    };
-    M* arr; //the dynamic array
     int size;
-    int number_of_element;
-    int number_of_tombstone;
+    int number_of_elements;
+    int number_of_tombstones;
+    T tombstone;
     int prime_possible_sizes[POSSIBLE_SIZES];
+    T* arr;
 public:
-    hashTable(int length )
+    HashTable(T tomb)
     {
         init_prime();
-        int upper_prime=find_upper(length);
-        arr = new M[upper_prime]();
-        size = upper_prime;
-        number_of_element=0;
-        number_of_tombstone=0;
+        size = prime_possible_sizes[0];
+        arr = new T[size]();
+        number_of_elements=0;
+        number_of_tombstones=0;
+        tombstone=tomb;
     }
-    ~hashTable()
+
+    HashTable(int length, T tomb): size(length), number_of_elements(0), number_of_tombstones(0), tombstone(tomb)
+    {
+        init_prime();
+        size = find_upper(length);
+        arr = new T[size];
+    }
+    ~HashTable()
     {
         delete []arr;
     }
-    int insert_position(int id, T data,M* array)
+    T& operator [](int idx)
     {
-        int index_to_insert= hash(id);
-        int k=1; //hash with k =0 upper line
-        M element=array[index_to_insert];
-        while(element != return_null<M>() || element.get_key() == TOMBSTONE)
-        {
-            if(element != return_null<M>() && element.get_data() == data )
-            {
-                return -1;
-            }
-            index_to_insert = double_hashing(id,k);
-            element=array[index_to_insert];
-            k++;
-        }
-        return index_to_insert;
+        return arr[idx];
     }
 
-    // this function help for initialize the array of prime number of the class
+//***********************************************************************************************************************
+//----------------------------------------------Operations---------------------------------------------------------------
+//***********************************************************************************************************************
+
+    void insert(int id, T data)
+    {
+        int index = find_index_to_insert(id);
+        if(arr[index] == tombstone)
+        {
+            number_of_tombstones--;
+        }
+        arr[index] = data;
+        number_of_elements++;
+        fixing_sizes();
+    }
+
+    int find(int id)
+    {
+        int index = hash(id), k=1;
+        while(arr[index] != nullptr && arr[index]->getID() != id )
+        {
+            index = double_hashing(id,k);
+            k++;
+        }
+        if(arr[index] == nullptr)
+            return NOT_FOUND;
+        else
+            return index;
+    }
+
+    void remove(int id)
+    {
+        int index = find(id);
+        if (index == -1)
+            return;
+        else
+        {
+            arr[index] = tombstone;
+            number_of_tombstones++;
+            number_of_elements--;
+        }
+        fixing_sizes();
+    }
+
+
+
+//**********************************************************************************************************************
+//----------------------------------------------Hashing-----------------------------------------------------------------
+//**********************************************************************************************************************
+
+    int double_hashing(int id, int k)
+    {
+        return ((hash(id) + (k * step_func(id))) % size) ;
+    }
+
+    int hash(int id)
+    {
+        return id % size;
+    }
+
+    int step_func(int id)
+    {
+        return 1 + (id % (size-2));
+    }
+
+    int find_index_to_insert(int id)
+    {
+        int index = hash(id);
+        int k=1;
+        while(arr[index] != nullptr && arr[index] != tombstone)
+        {
+            index = double_hashing(id,k);
+            k++;
+        }
+        return index;
+    }
+
+//**********************************************************************************************************************
+//----------------------------------------------Size Management---------------------------------------------------------
+//**********************************************************************************************************************
+
+    void fixing_sizes()
+    {
+        if(number_of_elements > size/2)
+            resize_up();
+        if(number_of_elements < size/4 && size > prime_possible_sizes[0])
+            resize_down();
+    }
+
+    void resize_up()
+    {
+        T temp_array[number_of_elements];
+        for(int i=0,j=0; i<size; ++i)
+        {
+            if(arr[i] != tombstone && arr[i] != nullptr)
+            {
+                temp_array[j] = arr[i];
+                j++;
+            }
+        }
+        delete []arr;
+        size = find_upper(size);
+        arr = new T[size]();
+        int correct_num_of_elements = number_of_elements;
+        for(int i=0; i< correct_num_of_elements; i++)
+        {
+            int index = find_index_to_insert(temp_array[i]->getID());
+            if(arr[index] == tombstone)
+                number_of_tombstones--;
+            arr[index] = temp_array[i];
+        }
+        number_of_tombstones = 0;
+    }
+
+    void resize_down()
+    {
+        T temp_array[number_of_elements];
+        for(int i=0,j=0; i<size; ++i)
+        {
+            if(arr[i] != tombstone && arr[i] != nullptr)
+            {
+                temp_array[j] = arr[i];
+                j++;
+            }
+        }
+        delete []arr;
+        size = find_lower(size);
+        arr = new T[size]();
+        int correct_num_of_elements = number_of_elements;
+        for(int i=0; i< correct_num_of_elements; i++)
+        {
+            int index = find_index_to_insert(temp_array[i]->getID());
+            if(arr[index] == tombstone)
+                number_of_tombstones--;
+            arr[index] = temp_array[i];
+        }
+        number_of_tombstones =0;
+    }
+
+//**********************************************************************************************************************
+//----------------------------------------------Prime numbers-----------------------------------------------------------
+//**********************************************************************************************************************
+
     void init_prime()
     {
         int prime[POSSIBLE_SIZES]={13,29,53,97,193,389,769,1543,
@@ -110,13 +196,12 @@ public:
         }
     }
 
-    //this function find the nearest prime from length in the array of prime numbers
-    int find_upper(int i)
+    int find_upper(int current)
     {
         int result=0;
         for(auto element:prime_possible_sizes)
         {
-            if (element > i)
+            if (element > current)
             {
                 result = element;
                 break;
@@ -125,155 +210,19 @@ public:
         return result;
     }
 
-    int insert(int id, T data)
+    int find_lower(int current)
     {
-        int index_to_insert= insert_position(id,data,arr);
-        M new_element = M(id,data);
-        set(index_to_insert,new_element,arr);
-        number_of_element++;
-        return 0;
-    }
-
-    void set(int index, M value, M* array)
-    {
-        if( array[index] != return_null<M>())
+        int result=0;
+        for(int i=POSSIBLE_SIZES-1; i>0; --i)
         {
-            return ; //error to throw :: there is a problem in
-        }
-        array[index]=value;
-        if(number_of_element>(size/2))
-        {
-            resize();
-        }
-    }
-
-    int find_next()
-    {
-        int new_size;
-        for (int i=0; i<POSSIBLE_SIZES ; i++)
-        {
-            if(prime_possible_sizes[i]==size)
+            if (prime_possible_sizes[i] < current)
             {
-                new_size= prime_possible_sizes[i+1];
-                break;
+                return prime_possible_sizes[i];
             }
         }
-        return new_size;
+        return 13;
     }
 
-    void resize()
-    {
-        int new_size= find_next();
-        M* new_arr= new M[new_size]();
-        for( int j=0; j<size; j++)
-        {
-            new_arr[j]=arr[j];
-        }
-        delete []arr;
-        arr= new_arr;
-        size=new_size;
-    }
-    /*
-    int find(int id, T& element)
-    {
-        int index = hash(id);
-        int k =0;
-        while(arr[index] != element)
-        {
-            index = double_hashing(id,k);
-            k++;
-            if(arr[index] == default_null)
-            {
-                return -1;
-            }
-        }
-        return index;
-    }
-*/
-    int double_hashing(int id, int k)
-    {
-        return ((hash(id) + (k * step_func(id))) % size) ;
-    }
-    int hash(int id)
-    {
-        return id % size;
-    }
-    int step_func(int id)
-    {
-        return 1 + (id % (size-2));
-    }
-
-    void set_tomb(int index, M value, M* array)
-    {
-        array[index]=value;
-    }
-
-    /*
-    void clean_tombstone()
-    {
-        int new_size=find_upper(number_of_element);
-        M* new_arr=new M[new_size]();
-        for (int i=0; i<size; i++)
-        {
-            if(arr[i] == return_null<M>())
-            {
-                continue;
-            }
-            M element=arr[i];
-            if( element.get_data() != return_null<M>().get_data())
-            {
-                int index_to_insert = insert_position(element.get_key(),element.get_data(),new_arr);
-                set(index_to_insert,element,new_arr);
-            }
-        }
-        delete []arr;
-        arr = new_arr;
-        size=new_size;
-        number_of_tombstone=0;
-    }
-*/
-    void clean_tombstone()
-    {
-        M* new_arr=new M[number_of_element]();
-        for (int i=0; i<size; i++)
-        {
-            if (arr[i] == return_null<M>()) {
-                continue;
-            }
-            M element = arr[i];
-            if (element.get_data() != return_null<M>().get_data()) {
-                new_arr[i] = element;
-            }
-        }
-        for(int i=0; i<number_of_element; i++)
-        {
-            insert(new_arr->get_key(),new_arr->get_data());
-        }
-        delete []new_arr;
-    }
-
-
-    void remove(int id, int no)
-    {
-        int index_to_remove= hash(id),k=1;
-        M element= arr[index_to_remove];
-        while( element.get_key() != id)
-        {
-            index_to_remove=double_hashing(id,k);
-            element= arr[index_to_remove];
-            k++;
-        }
-        M tombstone= M(element.get_key(), return_null<M>().get_data());
-        set_tomb(index_to_remove,tombstone,arr);
-        number_of_tombstone++;
-        number_of_element--;
-        /*
-        if(number_of_tombstone > size/20 )//TODO: check what is the number
-        {
-            clean_tombstone();
-        }
-        */
-    }
 };
 
-#endif //HASH_TABLE_H
+#endif //WET2_HASHTABLE_H
