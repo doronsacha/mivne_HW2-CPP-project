@@ -1,9 +1,16 @@
-//
-//
 #ifndef WET2_HASHTABLE_H
 #define WET2_HASHTABLE_H
 #define POSSIBLE_SIZES 28
 #include <iostream>
+
+typedef enum
+{
+    NOT_FOUND =-1,
+    SUCCESS=-2,
+    ALREADY_EXIST=-3,
+    NULL_ARGUMENT=-4,
+}ERROR;
+
 
 template<class T>
 class HashTable{
@@ -18,13 +25,14 @@ public:
     HashTable(T tomb): number_of_elements(0), number_of_tombstones(0), tombstone(tomb){
         init_prime();
         size = prime_possible_sizes[0];
-        arr = new T[size];
+        arr = new T[size]();
     }
 
-    HashTable(int length, T tomb): size(length), number_of_elements(0), number_of_tombstones(0), tombstone(tomb){
+    HashTable(int length, T tomb): size(length), number_of_elements(0), number_of_tombstones(0), tombstone(tomb)
+    {
         init_prime();
         size = find_upper(length);
-        arr = new T[size];
+        arr = new T[size]();
     }
     ~HashTable()
     {
@@ -39,14 +47,19 @@ public:
 //----------------------------------------------Operations---------------------------------------------------------------
 //**********************************************************************************************************************
 
-    void insert(int id, T data)
+    ERROR insert(int id, T data)
     {
         int index = find_index_to_insert(id);
+        if(index==-1)
+        {
+            return ALREADY_EXIST;
+        }
         if(arr[index] == tombstone)
             number_of_tombstones--;
         arr[index] = data;
         number_of_elements++;
         fixing_sizes();
+        return SUCCESS;
     }
 
     int find(int id)
@@ -60,14 +73,14 @@ public:
         if(arr[index] == nullptr)
             return -1;
         else
-            return index;
+            return index;//TODO: change To index
     }
 
-    void remove(int id)
+    ERROR remove(int id)
     {
         int index = find(id);
-        if (index == -1)
-            return;
+        if (index == NOT_FOUND)
+            return NOT_FOUND;
         else
         {
             arr[index] = tombstone;
@@ -75,6 +88,7 @@ public:
             number_of_elements--;
         }
         fixing_sizes();
+        return SUCCESS;
     }
 
 
@@ -103,6 +117,12 @@ public:
         int index = hash(id), k=1;
         while(arr[index] != nullptr && arr[index] != tombstone)
         {
+            T element=arr[index];
+            int id_element= int(arr[index]->getID()); // needed conversion here
+            if(id_element == id) //TODO: this is not just for the test this is important
+            {
+                return -1;
+            }
             index = double_hashing(id,k);
             k++;
         }
@@ -123,46 +143,54 @@ public:
 
     void resize_up()
     {
-        T temp_array[number_of_elements];
-        for(int i=0,j=0; i<size; ++i)
+        T temp_array[number_of_elements]={nullptr};
+        int current_size=size;
+        int counter=0;
+        for(int i=0; i<current_size; i++)
         {
             if(arr[i] != tombstone && arr[i] != nullptr)
             {
-                temp_array[j] = arr[i];
-                j++;
+                temp_array[counter] = arr[i];
+                counter++;
             }
         }
         delete []arr;
         size = find_upper(size);
-        arr = new T[size];
+        arr = new T[size]();
         int correct_num_of_elements = number_of_elements;
         for(int i=0; i< correct_num_of_elements; i++)
         {
-            insert(temp_array[i]->getID(),temp_array[i]);
-            number_of_elements--; // only because insert increase it by 1, although in resize the number of element isn't changing.
+            int index = find_index_to_insert(temp_array[i]->getID());
+            if(arr[index] == tombstone)
+                number_of_tombstones--;
+            arr[index] = temp_array[i];
         }
         number_of_tombstones = 0;
     }
 
     void resize_down()
     {
-        T temp_array[number_of_elements];
-        for(int i=0,j=0; i<size; ++i)
+        T temp_array[number_of_elements]={nullptr};
+        int current_size=size;
+        int counter=0;
+        for(int i=0; i<current_size; ++i)
         {
             if(arr[i] != tombstone && arr[i] != nullptr)
             {
-                temp_array[j] = arr[i];
-                j++;
+                temp_array[counter] = arr[i];
+                counter++;
             }
         }
         delete []arr;
         size = find_lower(size);
-        arr = new T[size];
+        arr = new T[size]();
         int correct_num_of_elements = number_of_elements;
         for(int i=0; i< correct_num_of_elements; i++)
         {
-            insert(temp_array[i]->getID(),temp_array[i]);
-            number_of_elements--; // only because insert increase it by 1, although in resize the number of element isn't changing.
+            int index = find_index_to_insert(temp_array[i]->getID());
+            if(arr[index] == tombstone)
+                number_of_tombstones--;
+            arr[index] = temp_array[i];
         }
         number_of_tombstones =0;
     }
@@ -191,11 +219,10 @@ public:
         {
             if (element > current)
             {
-                result = element;
-                break;
+                return element;
             }
         }
-        return result;
+        return 1610612741;
     }
 
     int find_lower(int current)
@@ -205,11 +232,10 @@ public:
         {
             if (prime_possible_sizes[i] < current)
             {
-                result = prime_possible_sizes[i];
-                break;
+                return prime_possible_sizes[i];
             }
         }
-        return result;
+        return 13;
     }
 };
 
