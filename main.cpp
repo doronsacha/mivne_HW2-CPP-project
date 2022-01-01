@@ -23,5 +23,5 @@ int main()
     Player tomb_player(-2,-2);
     HashTable<Player*> table(&tomb_player);
     //here insert all the test
-    retunr 0;
+    return 0;
 }
