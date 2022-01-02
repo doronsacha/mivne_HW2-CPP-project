@@ -21,14 +21,15 @@ private:
     T tombstone;
     int prime_possible_sizes[POSSIBLE_SIZES];
     T* arr;
+    int remove_counter;
 public:
-    HashTable(T tomb): number_of_elements(0), number_of_tombstones(0), tombstone(tomb){
+    HashTable(T tomb): number_of_elements(0), number_of_tombstones(0), tombstone(tomb), remove_counter(0){
         init_prime();
         size = prime_possible_sizes[0];
         arr = new T[size]();
     }
 
-    HashTable(int length, T tomb): size(length), number_of_elements(0), number_of_tombstones(0), tombstone(tomb)
+    HashTable(int length, T tomb): size(length), number_of_elements(0), number_of_tombstones(0), tombstone(tomb), remove_counter(0)
     {
         init_prime();
         size = find_upper(length);
@@ -86,8 +87,10 @@ public:
             arr[index] = tombstone;
             number_of_tombstones++;
             number_of_elements--;
+            remove_counter++;
         }
         fixing_sizes();
+        fixing_tombstones();
         return SUCCESS;
     }
 
@@ -129,16 +132,58 @@ public:
         return index;
     }
 
+    void fixing_tombstones()
+    {
+        if (remove_counter == size/3)
+        {
+            rehash();
+            remove_counter = 0;
+        }
+    }
+
+
+    void rehash()
+    {
+        T temp_array[number_of_elements]={nullptr};
+        int current_size=size;
+        int counter=0;
+        for(int i=0; i<current_size; i++)
+        {
+            if(arr[i] != tombstone && arr[i] != nullptr)
+            {
+                temp_array[counter] = arr[i];
+                counter++;
+            }
+        }
+        delete []arr;
+        arr = new T[size]();
+        int correct_num_of_elements = number_of_elements;
+        for(int i=0; i< correct_num_of_elements; i++)
+        {
+            int index = find_index_to_insert(temp_array[i]->getID());
+            if(arr[index] == tombstone)
+                number_of_tombstones--;
+            arr[index] = temp_array[i];
+        }
+        number_of_tombstones = 0;
+    }
+
 //**********************************************************************************************************************
 //----------------------------------------------Size Management---------------------------------------------------------
 //**********************************************************************************************************************
 
     void fixing_sizes()
     {
-        if(number_of_elements > size/2)
+        if(number_of_elements == size)
+        {
             resize_up();
+            remove_counter = 0;
+        }
         if(number_of_elements < size/4 && size > prime_possible_sizes[0])
+        {
             resize_down();
+            remove_counter = 0;
+        }
     }
 
     void resize_up()
