@@ -13,7 +13,8 @@ typedef enum
 
 
 template<class T>
-class HashTable{
+class HashTable
+        {
 private:
     int size;
     int number_of_elements;
@@ -23,7 +24,8 @@ private:
     T* arr;
     int remove_counter;
 public:
-    HashTable(T tomb): number_of_elements(0), number_of_tombstones(0), tombstone(tomb), remove_counter(0){
+    HashTable(T tomb): number_of_elements(0), number_of_tombstones(0), tombstone(tomb), remove_counter(0)
+    {
         init_prime();
         size = prime_possible_sizes[0];
         arr = new T[size]();
@@ -40,7 +42,8 @@ public:
         delete []arr;
     }
 
-    T& operator [](int idx) {
+    T& operator [](int idx)
+    {
         return arr[idx];
     }
 
@@ -48,20 +51,7 @@ public:
 //----------------------------------------------Operations---------------------------------------------------------------
 //**********************************************************************************************************************
 
-    ERROR insert(int id, T data)
-    {
-        int index = find_index_to_insert(id);
-        if(index==-1)
-        {
-            return ALREADY_EXIST;
-        }
-        if(arr[index] == tombstone)
-            number_of_tombstones--;
-        arr[index] = data;
-        number_of_elements++;
-        fixing_sizes();
-        return SUCCESS;
-    }
+
 
     int find(int id)
     {
@@ -74,7 +64,26 @@ public:
         if(arr[index] == nullptr)
             return -1;
         else
-            return index;//TODO: change To index
+            return index;
+    }
+
+    ERROR insert(int id, T data)
+    {
+        if(find(id)!=-1)
+        {
+            return ALREADY_EXIST;
+        }
+        int index = find_index_to_insert(id);
+        if(index==-1)
+        {
+            return ALREADY_EXIST;
+        }
+        if(arr[index] == tombstone)
+            number_of_tombstones--;
+        arr[index] = data;
+        number_of_elements++;
+        fixing_sizes();
+        return SUCCESS;
     }
 
     ERROR remove(int id)
@@ -283,5 +292,6 @@ public:
         return 13;
     }
 };
+
 
 #endif //WET2_HASHTABLE_H

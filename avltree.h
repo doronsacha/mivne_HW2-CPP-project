@@ -496,8 +496,6 @@ public:
         transform_to_array_by_inorder_maximum_n_helper(firstNode->right,arr,i,n);
     }
 
-
-    
 };
 
 #endif //AVL_TREE_H
