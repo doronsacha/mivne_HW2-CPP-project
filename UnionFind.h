@@ -1,7 +1,3 @@
-//
-// Created by tsahiedri on 03/01/2022.
-//
-
 #ifndef WET2_UNIONFIND_H
 #define WET2_UNIONFIND_H
 
