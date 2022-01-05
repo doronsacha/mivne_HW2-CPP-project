@@ -42,6 +42,11 @@ public:
         delete []arr;
     }
 
+    void setTomb(T tomb)
+    {
+        tombstone = tomb;
+    }
+
     T& operator [](int idx)
     {
         return arr[idx];

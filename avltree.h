@@ -6,7 +6,7 @@
 
 using namespace std;
 
-template <class T,class S>
+template <class T>
 class AVL{
 private:
     class Node{
@@ -14,7 +14,6 @@ private:
         Node* right;
         Node* left;
         T key;
-        S data;
         int num_of_elements_in_sub_tree; // for getting rank
         int sum_of_smaller; // for Sum problem - need to sum the keys
         // which will be the levels in the tree (averageHighestPlayerByGroup)
@@ -47,9 +46,9 @@ public:
 
 
     /** Inserting a new node with the given key. may required some rotating. */
-    void insert(T key,S data)
+    void insert(T key)
     {
-        root = insertUtil(root,key,data);
+        root = insertUtil(root,key);
         size++;
     }
 
@@ -131,13 +130,6 @@ public:
         }
     }
 
-
-
-    /** A function used in order to get the node's Data.*/
-    T getData(Node* v) const
-    {
-        return v->data;
-    }
     Node* findNode(T key)
     {
         return findNodeAid(root,key);
@@ -288,7 +280,7 @@ public:
     void preorderAid(Node* r){
         if (r == nullptr)
             return;
-        cout << r->data << "  ";
+        cout << r->key << "  ";
         preorderAid(r->left);
         preorderAid(r->right);
     }
@@ -298,23 +290,22 @@ public:
             return;
         postorderAid(r->left);
         postorderAid(r->right);
-        cout << r->data << "  ";
+        cout << r->key << "  ";
     }
 
     void inorderAid(Node* r){
         if (r == nullptr)
             return;
         inorderAid(r->left);
-        cout << r->data << "  ";
+        cout << r->key << "  ";
         inorderAid(r->right);
     }
 
-    Node* insertUtil(Node * r, T key,S data)
+    Node* insertUtil(Node * r, T key)
     {
         if (r == nullptr) {
             r = new Node;
             r->key = key;
-            r->data = data;
             r->num_of_elements_in_sub_tree = 1;
             r->sum_of_smaller = key;
             r->left = nullptr;
@@ -323,11 +314,11 @@ public:
         }
         else if (key < r->key)
         {
-            r->left = insertUtil(r->left, key,data);
+            r->left = insertUtil(r->left, key);
             r = balance(r);
         }
         else if (r->key <= key) {
-            r->right = insertUtil(r->right, key, data);
+            r->right = insertUtil(r->right, key);
             r = balance(r);
         }
         update_num_of_elements_in_subtree(r);
@@ -347,7 +338,6 @@ public:
         else if (t->left && t->right) {
             temp = findMin(t->right);
             t->key = temp->key;
-            t->data=temp->data;
             t->right = removeAid(t->right, t->key);
         }
             // if element has 1 or 0 child
@@ -373,37 +363,6 @@ public:
         }
     }
 
-    void transform_to_array_by_order_helper(Node* firstNode,S **arr, int* i)
-    {
-        if(firstNode== nullptr)
-        {
-            return;
-        }
-        transform_to_array_by_order_helper(firstNode->right,arr,i);
-        (*arr)[*i]=firstNode->data;
-        (*i)++;
-        transform_to_array_by_order_helper(firstNode->left,arr,i);
-    }
-    void transform_to_array_by_order(S **arr, int* i)
-    {
-        transform_to_array_by_order_helper(root,arr,i);
-    }
-
-    void transform_to_array_by_inorder_helper(Node* firstNode,S **arr, int* i)
-    {
-        if(firstNode== nullptr)
-        {
-            return;
-        }
-        transform_to_array_by_inorder_helper(firstNode->left,arr,i);
-        (*arr)[*i]=firstNode->data;
-        (*i)++;
-        transform_to_array_by_inorder_helper(firstNode->right,arr,i);
-    }
-    void transform_to_array_by_inorder(S **arr, int* i)
-    {
-        transform_to_array_by_inorder_helper(root,arr,i);
-    }
 
     // for keys.
     void transform_to_array_by_inorder_keys(T **arr, int* i)
@@ -423,78 +382,6 @@ public:
         transform_to_array_by_inorder_helper_keys(firstNode->right,arr,i);
     }
 
-
-
-    void fill_tree_helper(Node* firstNode,T ** arrKey,S **arrData, int* i)
-    {
-        if(firstNode== nullptr)
-        {
-            return;
-        }
-        fill_tree_helper(firstNode->left,arrKey,arrData,i);
-        firstNode->key = (*arrKey)[*i];
-        firstNode->data = (*arrData)[*i];
-        (*i)++;
-        fill_tree_helper(firstNode->right,arrKey,arrData,i);
-    }
-
-    void fill_tree(T ** arrKey,S **arrData, int* i)
-    {
-        fill_tree_helper(root,arrKey,arrData,i);
-    }
-
-
-
-    void treeDataClear(){
-        treeDataClearAid(root);
-        root = nullptr;
-        size=0;
-    }
-
-    void treeDataClearAid(Node* v){
-        if(v != nullptr){
-            treeDataClearAid(v->left);
-            treeDataClearAid(v->right);
-            delete v->data;
-            delete v;
-        }
-    }
-
-    void treeSpecialDataClear(){
-        treeSpecialDataClearAid(root);
-        root = nullptr;
-        size=0;
-    }
-
-    void treeSpecialDataClearAid(Node* v){
-        if(v != nullptr){
-            treeSpecialDataClearAid(v->left);
-            treeSpecialDataClearAid(v->right);
-            delete v->data.player;
-            delete v;
-        }
-    }
-
-    void transform_to_array_by_inorder_maximum_n(S **arr, int* i,int n)
-    {
-        transform_to_array_by_inorder_maximum_n_helper(root,arr,i,n);
-    }
-
-    void transform_to_array_by_inorder_maximum_n_helper(Node* firstNode,S **arr, int* i,int n)
-    {
-        if(firstNode== nullptr)
-        {
-            return;
-        }
-        transform_to_array_by_inorder_maximum_n_helper(firstNode->left,arr,i,n);
-        if(*i >n-1)
-        {
-            return;
-        }
-        (*arr)[*i]=firstNode->data;
-        (*i)++;
-        transform_to_array_by_inorder_maximum_n_helper(firstNode->right,arr,i,n);
-    }
 
 };
 
