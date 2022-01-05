@@ -11,6 +11,8 @@
 #include "player_info.h"
 #include "library2.h"
 
+using namespace std;
+
 class PlayersManager{
 private:
     UnionFind<Box> uni;
@@ -22,6 +24,17 @@ public:
     players_in_ds(HashTable<PlayerInfo> (*tomb)), system(Box(scale))
     {
         players_in_ds = HashTable<PlayerInfo>(*tomb);
+    }
+    ~PlayersManager()
+    {
+        delete tomb;
+    }
+    StatusType mergeGroups(int GroupID1,int GroupID2)
+    {
+        if (GroupID1 <=0 || GroupID2<= 0 || GroupID1 > uni.getUniverseSize() || GroupID2 > uni.getUniverseSize())
+        {
+            return INVALID_INPUT;
+        }
     }
 };
 

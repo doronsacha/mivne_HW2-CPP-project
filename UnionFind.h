@@ -131,6 +131,11 @@ public:
         }
         return iterator;
     }
+
+    int getUniverseSize() const
+    {
+        return universe_size;
+    }
 };
 
 

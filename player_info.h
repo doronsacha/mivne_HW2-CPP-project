@@ -18,35 +18,43 @@ public:
         player_id(playerId), group_id(groupId), score(score), level(level) {}
     ~PlayerInfo() = default;
 
-    int getPlayerId() const {
+    int getPlayerId() const
+    {
         return player_id;
     }
 
-    int getGroupId() const {
+    int getGroupId() const
+    {
         return group_id;
     }
 
-    int getScore() const {
+    int getScore() const
+    {
         return score;
     }
 
-    int getLevel() const {
+    int getLevel() const
+    {
         return level;
     }
 
-    void setPlayerId(int playerId) {
+    void setPlayerId(int playerId)
+    {
         player_id = playerId;
     }
 
-    void setGroupId(int groupId) {
+    void setGroupId(int groupId)
+    {
         group_id = groupId;
     }
 
-    void setScore(int score) {
+    void setScore(int score)
+    {
         PlayerInfo::score = score;
     }
 
-    void setLevel(int level) {
+    void setLevel(int level)
+    {
         PlayerInfo::level = level;
     }
 };
