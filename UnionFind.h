@@ -80,6 +80,7 @@ public:
         {
             box2->head->father = box1->head;
             box1->size += box2->size;
+            box1->merge_boxes(box2);
             delete box2;
             groups[second_group] = box1;
         }
@@ -87,6 +88,7 @@ public:
         {
             box1->head->father = box2->head;
             box2->size += box1->size;
+            box2->merge_boxes(box1);
             delete box1;
             groups[first_group] = box2;
         }
@@ -96,6 +98,7 @@ public:
             {
                 box2->head->father = box1->head;
                 box1->size += box2->size;
+                box1->merge_boxes(box2);
                 delete box2;
                 groups[second_group] = box1;
             }
@@ -103,6 +106,7 @@ public:
             {
                 box1->head->father = box2->head;
                 box2->size += box1->size;
+                box2->merge_boxes(box1);
                 delete box1;
                 groups[first_group] = box2;
             }

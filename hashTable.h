@@ -3,13 +3,7 @@
 #define POSSIBLE_SIZES 28
 #include <iostream>
 
-typedef enum
-{
-    NOT_FOUND =-1,
-    SUCCESS=-2,
-    ALREADY_EXIST=-3,
-    NULL_ARGUMENT=-4,
-}ERROR;
+
 
 
 template<class T>
@@ -72,30 +66,30 @@ public:
             return index;
     }
 
-    ERROR insert(int id, T data)
+    void insert(int id, T data)
     {
         if(find(id)!=-1)
         {
-            return ALREADY_EXIST;
+            return;
         }
         int index = find_index_to_insert(id);
         if(index==-1)
         {
-            return ALREADY_EXIST;
+            return;
         }
         if(arr[index] == tombstone)
             number_of_tombstones--;
         arr[index] = data;
         number_of_elements++;
         fixing_sizes();
-        return SUCCESS;
+        return;
     }
 
-    ERROR remove(int id)
+    void remove(int id)
     {
         int index = find(id);
-        if (index == NOT_FOUND)
-            return NOT_FOUND;
+        if (index == -1)
+            return;
         else
         {
             arr[index] = tombstone;
@@ -105,7 +99,7 @@ public:
         }
         fixing_sizes();
         fixing_tombstones();
-        return SUCCESS;
+        return;
     }
 
 
