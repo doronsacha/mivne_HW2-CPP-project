@@ -183,7 +183,7 @@ public:
 
     void fixing_sizes()
     {
-        if(number_of_elements == size)
+        if(number_of_elements+number_of_tombstones >= size)
         {
             resize_up();
             remove_counter = 0;

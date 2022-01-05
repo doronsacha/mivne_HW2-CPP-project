@@ -12,7 +12,8 @@ public:
 };
 
 template<class T>
-class UnionFind{
+class UnionFind
+        {
 private:
     int universe_size;
     Node<T>** elements;
