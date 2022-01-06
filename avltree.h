@@ -365,21 +365,47 @@ public:
 
 
     // for keys.
-    void transform_to_array_by_inorder_keys(T **arr, int* i)
+    void transform_to_array(T **lvl_arr,T** rank_arr, T** sum_arr, int* i)
     {
-        transform_to_array_by_inorder_helper_keys(root,arr,i);
+        transform_to_array_helper(root,lvl_arr,rank_arr,sum_arr,i);
     }
 
-    void transform_to_array_by_inorder_helper_keys(Node* firstNode,T **arr, int* i)
+    void transform_to_array_helper(Node* firstNode,T **lvl_arr,T** rank_arr, T** sum_arr, int* i)
     {
         if(firstNode== nullptr)
         {
             return;
         }
-        transform_to_array_by_inorder_helper_keys(firstNode->left,arr,i);
-        (*arr)[*i]=firstNode->key;
+        transform_to_array_by_inorder_helper_keys(firstNode->left,lvl_arr,rank_arr,sum_arr,i);
+        (*lvl_arr)[*i]=firstNode->key;
+        (*rank_arr)[*i]=firstNode->num_of_elements_in_sub_tree;
+        (*sum_arr)[*i]=firstNode->sum_of_smaller;
         (*i)++;
-        transform_to_array_by_inorder_helper_keys(firstNode->right,arr,i);
+        transform_to_array_by_inorder_helper_keys(firstNode->right,lvl_arr,rank_arr,sum_arr,i);
+    }
+
+
+    //Not Done
+    void merge_lvl_trees_reference(AVL<T> &small_tree) // half way, still a lot to do
+    {
+        int i=0;
+        int small_tree_size = small_tree.size;
+        T * small_tree_lvls = new T[small_tree_size];
+        T * small_tree_rank_data = new T[small_tree_size];
+        T * small_tree_sum_data = new T[small_tree_size];
+        transform_to_array(small_tree_lvls,small_tree_rank_data,small_tree_sum_data,&i);
+
+        i=0;
+        int big_tree_size = size;
+        T * big_tree_lvls = new T[big_tree_size];
+        T * big_tree_rank_data = new T[big_tree_size];
+        T * big_tree_sum_data = new T[big_tree_size];
+        transform_to_array(big_tree_lvls,big_tree_rank_data,big_tree_sum_data,&i);
+
+    }
+    void merge_lvl_trees_pointer(AVL<int> * small_tree) // almost the same as the previous one, just it has to delete small_tree in the end.
+    {
+
     }
 
 

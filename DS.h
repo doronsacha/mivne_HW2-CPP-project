@@ -28,7 +28,7 @@ public:
     }
     ~PlayersManager()
     {
-        delete tomb;
+        Quit();
     }
 
     StatusType mergeGroups(int GroupID1,int GroupID2)
@@ -48,7 +48,7 @@ public:
         {
             return INVALID_INPUT;
         }
-        if(players_in_ds.find(PlayerID) == -1 )
+        if(players_in_ds.find(PlayerID) != -1 )
         {
             return FAILURE;
         }
@@ -73,7 +73,66 @@ public:
         system_box.remove_player_from_box(player.getScore(),player.getLevel());
         //delete the player from the group box
         uni.find_team_leader(player.getGroupId())->box->remove_player_from_box(player.getScore(),player.getLevel());
+        players_in_ds.remove(PlayerID);
         return SUCCESS;
+    }
+
+    StatusType increasePlayerIDLevel(int PlayerID, int LevelIncrease)
+    {
+        if( PlayerID <= 0 || LevelIncrease <= 0 )
+        {
+            return INVALID_INPUT;
+        }
+        if(players_in_ds.find(PlayerID) == -1 )
+        {
+            return FAILURE;
+        }
+        PlayerInfo player = players_in_ds[players_in_ds.find(PlayerID)];
+        if(player.getLevel() == 0)
+        {
+            system_box.update_lvl_for_player_lvl_0(LevelIncrease, player.getScore());
+            uni.find_team_leader(player.getGroupId())->box->update_lvl_for_player_lvl_0(LevelIncrease, player.getScore());
+        }
+        else
+        {
+            system_box.update_lvl_for_player_above_lvl_0(player.getLevel(),LevelIncrease, player.getScore());
+            uni.find_team_leader(player.getGroupId())->box->update_lvl_for_player_above_lvl_0(player.getLevel(),LevelIncrease, player.getScore());
+        }
+        player.setLevel(player.getLevel()+LevelIncrease);
+        return SUCCESS;
+    }
+
+    StatusType changePlayerIDScore(int PlayerID, int NewScore)
+    {
+        if (PlayerID <= 0 || NewScore > scale || NewScore <= 0)
+        {
+            return INVALID_INPUT;
+        }
+        if (players_in_ds.find(PlayerID) == -1)
+        {
+            return FAILURE;
+        }
+        PlayerInfo player = players_in_ds[players_in_ds.find(PlayerID)];
+        if (player.getLevel() != 0)
+        {
+            system_box.change_score_in_box(player.getScore(), NewScore, player.getLevel());
+            uni.find_team_leader(player.getGroupId())->box->change_score_in_box(player.getScore(), NewScore,
+                                                                                player.getLevel());
+        }
+        player.setScore(NewScore);
+        return SUCCESS;
+    }
+    StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel,double  * players);
+    StatusType averageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel);
+
+
+
+     //should be enough, because each Box Destructor free all the memory he uses,
+     // each tree has only ints so no memory allocated.
+     // we will check it more when we'll be able to run using their main.cpp
+     void Quit()
+     {
+        delete tomb;
     }
 };
 
