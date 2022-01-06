@@ -14,11 +14,23 @@ public:
     int num_of_players_with_lvl_0;
     int size;// we would name it "total_players",but need to leave it "size" due to Unionfind implementation
     NodeU<Box> *head;
+    int scale;
 
     explicit Box(int scale) : score_array(new AVL<int> *[scale]) , players_in_group(),
-    num_of_players_with_lvl_0(0), size(0) , head(nullptr){}
+    num_of_players_with_lvl_0(0), size(0) , head(nullptr),scale(scale)
+    {
+        for(int i=0; i<scale;i++)
+        {
+            score_array[i] = new AVL<int>;
+        }
+    }
     ~Box()
     {
+        for(int i=0; i<scale; i++)
+        {
+            if(score_array[i] != nullptr)
+                delete score_array[i];
+        }
         delete[] score_array;
     }
     void merge_boxes(Box * other, int scale) //Not Done
@@ -28,10 +40,11 @@ public:
             delete other;
             return;
         }
-        merge_trees_inside_box_ref(other->players_in_group); // no delete needed
+        merge_trees_inside_box_ref(other->players_in_group);
         for(int i=0; i<scale; i++)
         {
             merge_trees_inside_box_pointer(i,other->score_array[i]);
+            delete other->score_array[i];
         }
         size+=other->size;
         num_of_players_with_lvl_0+=other->num_of_players_with_lvl_0;

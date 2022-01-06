@@ -17,14 +17,15 @@ private:
     int universe_size;
     NodeU<T>** elements;
     T ** groups;
+    int scale;
 public:
-    UnionFind(int n) : universe_size(n)
+    UnionFind(int n, int scale) : universe_size(n), scale(scale)
     {
         elements = new NodeU<T>*[n];//array of pointers to NodeUs
         groups = new T*[n]; // array of T's pointers
         for(int i=0; i<n; i++)
         {
-            make_set(i);
+            make_set(i, scale);
         }
     }
     ~UnionFind()
@@ -46,10 +47,10 @@ public:
             delete elements[i];
         }
     }
-    void make_set(int id)
+    void make_set(int id,int scale)
     {
         elements[id] = new NodeU<T>(id);
-        groups[id] = new T(id);
+        groups[id] = new T(scale);
         groups[id]->head = elements[id];
         elements[id]->box = groups[id];
     }

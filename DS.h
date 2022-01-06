@@ -21,7 +21,7 @@ private:
     PlayerInfo* tomb;
     int scale;
 public:
-    PlayersManager(int k, int scale_) : uni(UnionFind<Box>(k)), tomb(new PlayerInfo(-1,-1,-1,-1)),
+    PlayersManager(int k, int scale_) : uni(UnionFind<Box>(k,scale_)), tomb(new PlayerInfo(-1,-1,-1,-1)),
     players_in_ds(HashTable<PlayerInfo*> (tomb)), system_box(Box(scale_)), scale(scale_)
     {
         players_in_ds.setTomb(tomb);

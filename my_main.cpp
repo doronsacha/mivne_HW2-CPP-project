@@ -15,5 +15,7 @@ int main()
     player.addPlayer(1765824312,10,60);
     player.addPlayer(1774460279,11,78);
     player.mergeGroups(10,11);
+    player.changePlayerIDScore(1765824312, 20);
+    player.increasePlayerIDLevel(1765824312,19);
 }
 
