@@ -13,26 +13,115 @@ public:
     AVL<int> players_in_group;
     int num_of_players_with_lvl_0;
     int size;// we would name it "total_players",but need to leave it "size" due to Unionfind implementation
-    Node<Box> *head;
+    NodeU<Box> *head;
 
-    Box(int scale) : score_array(new AVL<int> *[scale]) , players_in_group(),
+    explicit Box(int scale) : score_array(new AVL<int> *[scale]) , players_in_group(),
     num_of_players_with_lvl_0(0), size(0) , head(nullptr){}
     ~Box()
     {
         delete[] score_array;
     }
-    void merge_boxes(Box * smaller_box, int scale) //Not Done
+    void merge_boxes(Box * other, int scale) //Not Done
     {
-        // note to myself: maybe merging the trees will be a method in box and not in avl, need to think about it.
-        players_in_group.merge_lvl_trees_reference(smaller_box->players_in_group); // no delete needed
+        if(other->size == 0)
+        {
+            delete other;
+            return;
+        }
+        merge_trees_inside_box_ref(other->players_in_group); // no delete needed
         for(int i=0; i<scale; i++)
         {
-            score_array[i]->merge_lvl_trees_pointer(smaller_box->score_array[i]); // also deletes smaller tree
+            merge_trees_inside_box_pointer(i,other->score_array[i]);
         }
-        size+=smaller_box->size;
-        num_of_players_with_lvl_0+=smaller_box->num_of_players_with_lvl_0;
-        delete smaller_box;
+        size+=other->size;
+        num_of_players_with_lvl_0+=other->num_of_players_with_lvl_0;
+        delete other;
     }
+
+    static void merge(const int * a,const int *b, int *c, int sizeA,int sizeB)
+    {
+        int ia,ib,ic;
+        ia=ib=ic=0;
+        while(ia<sizeA && ib <sizeB)
+        {
+            if(a[ia] < b[ib])
+            {
+                c[ic] = a[ia];
+                ia++; ic++;
+            }
+            else
+            {
+                c[ic] = b[ib];
+                ib++; ic++;
+            }
+        }
+        while (ia<sizeA)
+        {
+            c[ic]= a[ia];
+            ia++; ic++;
+        }
+        while (ib<sizeB)
+        {
+            c[ic]= b[ib];
+            ib++; ic++;
+        }
+    }
+
+    void merge_trees_inside_box_ref(AVL<int> &other)
+    {
+        int x=0;
+        int other_tree_size = other.getSize();
+        int * other_tree_lvls = new int[other_tree_size];
+        other.transform_to_array(other_tree_lvls,&x);
+
+        x=0;
+        int our_tree_size = players_in_group.getSize();
+        int * our_tree_lvls = new int[our_tree_size];
+        players_in_group.transform_to_array(our_tree_lvls,&x);
+        int * total_lvls = new int[other_tree_size+our_tree_size];
+        merge(other_tree_lvls,our_tree_lvls,total_lvls,other_tree_size,our_tree_size);
+        delete[] other_tree_lvls;
+        delete[] our_tree_lvls;
+        other.treeClear();
+        players_in_group.treeClear();
+        create_empty_tree(players_in_group,our_tree_size+other_tree_size);
+        x=0;
+        players_in_group.fillTree(total_lvls,&x);
+        players_in_group.update_tree_extra_data_post_order();
+    }
+
+    static void create_empty_tree(AVL<int> & tree, int desired_size)
+    {
+        for(int i=0; i<desired_size; i++)
+        {
+            tree.insert(0);
+        }
+    }
+
+    void merge_trees_inside_box_pointer(int idx,AVL<int> *other)
+    {
+        int x=0;
+        int other_tree_size = other->getSize();
+        int * other_tree_lvls = new int[other_tree_size];
+        other->transform_to_array(other_tree_lvls,&x);
+
+        x=0;
+        int our_tree_size = score_array[idx]->getSize();
+        int * our_tree_lvls = new int[our_tree_size];
+        score_array[idx]->transform_to_array(our_tree_lvls,&x);
+        int * total_lvls = new int[other_tree_size+our_tree_size];
+        merge(other_tree_lvls,our_tree_lvls,total_lvls,other_tree_size,our_tree_size);
+        delete[] other_tree_lvls;
+        delete[] our_tree_lvls;
+        other->treeClear();
+        delete other;
+        score_array[idx]->treeClear();
+        create_empty_tree(*score_array[idx],our_tree_size+other_tree_size);
+        x=0;
+        score_array[idx]->fillTree(total_lvls,&x);
+        score_array[idx]->update_tree_extra_data_post_order();
+    }
+
     void insert_player_to_box()
     {
         size++;

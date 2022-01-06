@@ -17,14 +17,14 @@ class PlayersManager{
 private:
     UnionFind<Box> uni;
     Box system_box;
-    HashTable<PlayerInfo> players_in_ds; // the group id in each player is the group from the beginning, because we have find leader.
+    HashTable<PlayerInfo*> players_in_ds; // the group id in each player is the group from the beginning, because we have find leader.
     PlayerInfo* tomb;
     int scale;
 public:
     PlayersManager(int k, int scale_) : uni(UnionFind<Box>(k)), tomb(new PlayerInfo(-1,-1,-1,-1)),
-    players_in_ds(HashTable<PlayerInfo> (*tomb)), system_box(Box(scale_)), scale(scale_)
+    players_in_ds(HashTable<PlayerInfo*> (tomb)), system_box(Box(scale_)), scale(scale_)
     {
-        players_in_ds = HashTable<PlayerInfo>(*tomb);
+        players_in_ds.setTomb(tomb);
     }
     ~PlayersManager()
     {
@@ -37,7 +37,7 @@ public:
         {
             return INVALID_INPUT;
         }
-        uni.union_groups(GroupID1,GroupID2); // need to complete merge_boxes in box.h
+        uni.union_groups(GroupID1-1,GroupID2-1,scale);
         return SUCCESS;
     }
 
@@ -53,8 +53,8 @@ public:
             return FAILURE;
         }
         system_box.insert_player_to_box();
-        uni.find_team_leader(GroupID)->box->insert_player_to_box();
-        players_in_ds.insert(PlayerID,PlayerInfo(PlayerID,GroupID,score,0));
+        uni.find_team_leader(GroupID-1)->box->insert_player_to_box();
+        players_in_ds.insert(PlayerID,new PlayerInfo(PlayerID,GroupID,score,0));
         return SUCCESS;
     }
 
@@ -68,12 +68,13 @@ public:
         {
             return FAILURE;
         }
-        PlayerInfo player = players_in_ds[players_in_ds.find(PlayerID)];
+        PlayerInfo *player = players_in_ds[players_in_ds.find(PlayerID)];
         //delete the player from the system box
-        system_box.remove_player_from_box(player.getScore(),player.getLevel());
+        system_box.remove_player_from_box(player->getScore(),player->getLevel());
         //delete the player from the group box
-        uni.find_team_leader(player.getGroupId())->box->remove_player_from_box(player.getScore(),player.getLevel());
+        uni.find_team_leader(player->getGroupId()-1)->box->remove_player_from_box(player->getScore(),player->getLevel());
         players_in_ds.remove(PlayerID);
+        delete player;
         return SUCCESS;
     }
 
@@ -87,18 +88,18 @@ public:
         {
             return FAILURE;
         }
-        PlayerInfo player = players_in_ds[players_in_ds.find(PlayerID)];
-        if(player.getLevel() == 0)
+        PlayerInfo *player = players_in_ds[players_in_ds.find(PlayerID)];
+        if(player->getLevel() == 0)
         {
-            system_box.update_lvl_for_player_lvl_0(LevelIncrease, player.getScore());
-            uni.find_team_leader(player.getGroupId())->box->update_lvl_for_player_lvl_0(LevelIncrease, player.getScore());
+            system_box.update_lvl_for_player_lvl_0(LevelIncrease, player->getScore());
+            uni.find_team_leader(player->getGroupId()-1)->box->update_lvl_for_player_lvl_0(LevelIncrease, player->getScore());
         }
         else
         {
-            system_box.update_lvl_for_player_above_lvl_0(player.getLevel(),LevelIncrease, player.getScore());
-            uni.find_team_leader(player.getGroupId())->box->update_lvl_for_player_above_lvl_0(player.getLevel(),LevelIncrease, player.getScore());
+            system_box.update_lvl_for_player_above_lvl_0(player->getLevel(),LevelIncrease, player->getScore());
+            uni.find_team_leader(player->getGroupId()-1)->box->update_lvl_for_player_above_lvl_0(player->getLevel(),LevelIncrease, player->getScore());
         }
-        player.setLevel(player.getLevel()+LevelIncrease);
+        player->setLevel(player->getLevel()+LevelIncrease);
         return SUCCESS;
     }
 
@@ -112,16 +113,17 @@ public:
         {
             return FAILURE;
         }
-        PlayerInfo player = players_in_ds[players_in_ds.find(PlayerID)];
-        if (player.getLevel() != 0)
+        PlayerInfo *player = players_in_ds[players_in_ds.find(PlayerID)];
+        if (player->getLevel() != 0)
         {
-            system_box.change_score_in_box(player.getScore(), NewScore, player.getLevel());
-            uni.find_team_leader(player.getGroupId())->box->change_score_in_box(player.getScore(), NewScore,
-                                                                                player.getLevel());
+            system_box.change_score_in_box(player->getScore(), NewScore, player->getLevel());
+            uni.find_team_leader(player->getGroupId()-1)->box->change_score_in_box(player->getScore(), NewScore,
+                                                                                player->getLevel());
         }
-        player.setScore(NewScore);
+        player->setScore(NewScore);
         return SUCCESS;
     }
+
     StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel,double  * players);
     StatusType averageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel);
 

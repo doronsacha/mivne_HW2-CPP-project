@@ -364,49 +364,59 @@ public:
     }
 
 
-    // for keys.
-    void transform_to_array(T **lvl_arr,T** rank_arr, T** sum_arr, int* i)
+    void update_tree_extra_data_post_order()
     {
-        transform_to_array_helper(root,lvl_arr,rank_arr,sum_arr,i);
+        update_tree_extra_data_post_order_aid(root);
     }
 
-    void transform_to_array_helper(Node* firstNode,T **lvl_arr,T** rank_arr, T** sum_arr, int* i)
+    void update_tree_extra_data_post_order_aid(Node *r)
+    {
+        if (r == nullptr)
+            return;
+        postorderAid(r->left);
+        postorderAid(r->right);
+        update_sum_of_smaller(r);
+        update_num_of_elements_in_subtree(r);
+    }
+
+    void fill_tree_helper(Node* firstNode,T * arr,int* i)
     {
         if(firstNode== nullptr)
         {
             return;
         }
-        transform_to_array_by_inorder_helper_keys(firstNode->left,lvl_arr,rank_arr,sum_arr,i);
-        (*lvl_arr)[*i]=firstNode->key;
-        (*rank_arr)[*i]=firstNode->num_of_elements_in_sub_tree;
-        (*sum_arr)[*i]=firstNode->sum_of_smaller;
+        fill_tree_helper(firstNode->left,arr,i);
+        firstNode->key = arr[*i];
         (*i)++;
-        transform_to_array_by_inorder_helper_keys(firstNode->right,lvl_arr,rank_arr,sum_arr,i);
+        fill_tree_helper(firstNode->right,arr,i);
     }
 
-
-    //Not Done
-    void merge_lvl_trees_reference(AVL<T> &small_tree) // half way, still a lot to do
+    void fillTree(T * arr,int* i)
     {
-        int i=0;
-        int small_tree_size = small_tree.size;
-        T * small_tree_lvls = new T[small_tree_size];
-        T * small_tree_rank_data = new T[small_tree_size];
-        T * small_tree_sum_data = new T[small_tree_size];
-        transform_to_array(small_tree_lvls,small_tree_rank_data,small_tree_sum_data,&i);
-
-        i=0;
-        int big_tree_size = size;
-        T * big_tree_lvls = new T[big_tree_size];
-        T * big_tree_rank_data = new T[big_tree_size];
-        T * big_tree_sum_data = new T[big_tree_size];
-        transform_to_array(big_tree_lvls,big_tree_rank_data,big_tree_sum_data,&i);
-
+        fill_tree_helper(root,arr,i);
     }
-    void merge_lvl_trees_pointer(AVL<int> * small_tree) // almost the same as the previous one, just it has to delete small_tree in the end.
+
+
+    // for keys.
+    void transform_to_array(T *lvl_arr ,int* i)
     {
-
+        transform_to_array_helper(root,lvl_arr,i);
     }
+
+    void transform_to_array_helper(Node* firstNode,T *lvl_arr, int* i)
+    {
+        if(firstNode== nullptr)
+        {
+            return;
+        }
+        transform_to_array_helper(firstNode->left,lvl_arr,i);
+        lvl_arr[*i]=firstNode->key;
+        (*i)++;
+        transform_to_array_helper(firstNode->right,lvl_arr,i);
+    }
+
+
+
 
 
 };

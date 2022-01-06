@@ -31,10 +31,17 @@ public:
         size = find_upper(length);
         arr = new T[size]();
     }
+
     ~HashTable()
     {
+        for(int i=0; i<size; i++)
+        {
+            if (arr[i] != nullptr && arr[i] != tombstone)
+                delete arr[i];
+        }
         delete []arr;
     }
+
 
     void setTomb(T tomb)
     {
@@ -55,7 +62,7 @@ public:
     int find(int id)
     {
         int index = hash(id), k=1;
-        while(arr[index] != nullptr && arr[index]->getID() != id )
+        while(arr[index] != nullptr && arr[index]->getPlayerId() != id )
         {
             index = double_hashing(id,k);
             k++;
@@ -82,7 +89,6 @@ public:
         arr[index] = data;
         number_of_elements++;
         fixing_sizes();
-        return;
     }
 
     void remove(int id)
@@ -99,7 +105,6 @@ public:
         }
         fixing_sizes();
         fixing_tombstones();
-        return;
     }
 
 
@@ -129,7 +134,7 @@ public:
         while(arr[index] != nullptr && arr[index] != tombstone)
         {
             T element=arr[index];
-            int id_element= int(arr[index]->getID()); // needed conversion here
+            int id_element= int(arr[index]->getPlayerId()); // needed conversion here
             if(id_element == id) //TODO: this is not just for the test this is important
             {
                 return -1;
@@ -168,7 +173,7 @@ public:
         int correct_num_of_elements = number_of_elements;
         for(int i=0; i< correct_num_of_elements; i++)
         {
-            int index = find_index_to_insert(temp_array[i]->getID());
+            int index = find_index_to_insert(temp_array[i]->getPlayerId());
             if(arr[index] == tombstone)
                 number_of_tombstones--;
             arr[index] = temp_array[i];
@@ -213,7 +218,7 @@ public:
         int correct_num_of_elements = number_of_elements;
         for(int i=0; i< correct_num_of_elements; i++)
         {
-            int index = find_index_to_insert(temp_array[i]->getID());
+            int index = find_index_to_insert(temp_array[i]->getPlayerId());
             if(arr[index] == tombstone)
                 number_of_tombstones--;
             arr[index] = temp_array[i];
@@ -240,7 +245,7 @@ public:
         int correct_num_of_elements = number_of_elements;
         for(int i=0; i< correct_num_of_elements; i++)
         {
-            int index = find_index_to_insert(temp_array[i]->getID());
+            int index = find_index_to_insert(temp_array[i]->getPlayerId());
             if(arr[index] == tombstone)
                 number_of_tombstones--;
             arr[index] = temp_array[i];

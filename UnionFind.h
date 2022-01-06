@@ -1,14 +1,13 @@
 #ifndef WET2_UNIONFIND_H
 #define WET2_UNIONFIND_H
 
-
 template<class T>
-class Node{
+class NodeU{
 public:
     int key;
-    Node * father; // head the team will have nullptr here
-    T * box;// nullptr for every node except the head of the team
-    Node(int n): key(n), father(nullptr),box(nullptr){}
+    NodeU * father; // head the team will have nullptr here
+    T * box;// nullptr for every NodeU except the head of the team
+    NodeU(int n): key(n), father(nullptr),box(nullptr){}
 };
 
 template<class T>
@@ -16,12 +15,12 @@ class UnionFind
         {
 private:
     int universe_size;
-    Node<T>** elements;
+    NodeU<T>** elements;
     T ** groups;
 public:
     UnionFind(int n) : universe_size(n)
     {
-        elements = new Node<T>*[n];//array of pointers to nodes
+        elements = new NodeU<T>*[n];//array of pointers to NodeUs
         groups = new T*[n]; // array of T's pointers
         for(int i=0; i<n; i++)
         {
@@ -49,7 +48,7 @@ public:
     }
     void make_set(int id)
     {
-        elements[id] = new Node<T>(id);
+        elements[id] = new NodeU<T>(id);
         groups[id] = new T(id);
         groups[id]->head = elements[id];
         elements[id]->box = groups[id];
@@ -57,7 +56,7 @@ public:
 
     int find(int id)
     {
-        Node<T> * team_leader = find_team_leader(id);
+        NodeU<T> * team_leader = find_team_leader(id);
         shrink_group(team_leader,id);
         return team_leader->box->getID();
     }
@@ -65,11 +64,11 @@ public:
 
     T * get_box(int id)
     {
-        Node<T> * leader = find_team_leader(id);
+        NodeU<T> * leader = find_team_leader(id);
         return leader->box;
     }
 
-    void union_groups(int first_group, int second_group){
+    void union_groups(int first_group, int second_group, int scale){
         T * box1 = get_box(first_group);
         T * box2 = get_box(second_group);
         if(box1 == box2 || first_group == second_group)
@@ -79,17 +78,17 @@ public:
         if (box1->size > box2->size)
         {
             box2->head->father = box1->head;
-            box1->size += box2->size;
-            box1->merge_boxes(box2);
-            delete box2;
+            //box1->size += box2->size;
+            box1->merge_boxes(box2,scale);
+            //delete box2;
             groups[second_group] = box1;
         }
         else if(box1-> size < box2->size)
         {
             box1->head->father = box2->head;
-            box2->size += box1->size;
-            box2->merge_boxes(box1);
-            delete box1;
+            //box2->size += box1->size;
+            box2->merge_boxes(box1,scale);
+            //delete box1;
             groups[first_group] = box2;
         }
         else
@@ -97,27 +96,27 @@ public:
             if(box1->head->key > box2->head->key)
             {
                 box2->head->father = box1->head;
-                box1->size += box2->size;
-                box1->merge_boxes(box2);
-                delete box2;
+                //box1->size += box2->size;
+                box1->merge_boxes(box2,scale);
+                //delete box2;
                 groups[second_group] = box1;
             }
             else
             {
                 box1->head->father = box2->head;
-                box2->size += box1->size;
-                box2->merge_boxes(box1);
-                delete box1;
+                //box2->size += box1->size;
+                box2->merge_boxes(box1,scale);
+                //delete box1;
                 groups[first_group] = box2;
             }
         }
     }
 
 
-    void shrink_group(Node<T> *team_leader, int current_id)
+    void shrink_group(NodeU<T> *team_leader, int current_id)
     {
-        Node<T>* iterator = elements[current_id];
-        Node<T> * temp = iterator;
+        NodeU<T>* iterator = elements[current_id];
+        NodeU<T> * temp = iterator;
         while(iterator->father != nullptr)
         {
             iterator = iterator->father;
@@ -126,9 +125,9 @@ public:
         }
     }
 
-    Node<T> * find_team_leader(int id)
+    NodeU<T> * find_team_leader(int id)
     {
-        Node<T>* iterator = elements[id];
+        NodeU<T>* iterator = elements[id];
         while(iterator->father != nullptr)
         {
             iterator = iterator->father;
