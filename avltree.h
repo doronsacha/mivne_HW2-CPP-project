@@ -40,9 +40,10 @@ public:
     }
 
     /** In-order traversal. */
-        void inorder(){
-            inorderAid(root);
-        }
+    void inorder()
+    {
+        inorderAid(root);
+    }
 
 
     /** Inserting a new node with the given key. may required some rotating. */
@@ -61,9 +62,9 @@ public:
 
     /** A function that completely removes all the nodes in the tree, and set it's root to null.*/
     void treeClear(){
-            treeClearAid(root);
-            root = nullptr;
-            size=0;
+        treeClearAid(root);
+        root = nullptr;
+        size=0;
     }
 
     int getRank(T key)
@@ -73,19 +74,137 @@ public:
 
     int getRankUtil(T& key, int res, Node * v)
     {
-        if (v == nullptr) return 0;
-        if(v->key == key && v->left != nullptr) return 1+ v->left->num_of_elements_in_sub_tree + res;
-        else if(v->key == key) return 1+res;
+        if (v == nullptr)
+        {
+            return 0;
+        }
+        if(v->key == key && v->left != nullptr)
+        {
+            return 1+ v->left->num_of_elements_in_sub_tree + res;
+        }
+        else if(v->key == key)
+        {
+            return 1+res;
+        }
         else if (v->key < key)
         {
             if(v->left != nullptr)
-                return getRankUtil(key,1+ v->left->num_of_elements_in_sub_tree+res,v->right);
+            {
+                return getRankUtil(key, 1 + v->left->num_of_elements_in_sub_tree + res, v->right);
+            }
             else
-                return getRankUtil(key, 1+res, v->right);
+            {
+                return getRankUtil(key, 1 + res, v->right);
+            }
         }
-        else{
+        else
+        {
             return getRankUtil(key,res,v->left);
         }
+    }
+
+    int lowRank(T key)
+    {
+        return lowRankAid(key, root);
+    }
+
+    int lowRankAid(T key, Node* v)
+    {
+        if (v == nullptr)
+        {
+            return 1;
+        }
+        if (key<v->key)
+        {
+            return lowRankAid(key, v->left);
+        }
+
+        else if (key>v->key)
+        {
+            if(v->left!= nullptr)
+            {
+                return 1 + v->left->num_of_elements_in_sub_tree + lowRankAid(key, v->right);
+            }
+            return 1 + lowRankAid(key,v->right);
+        }
+        else
+        {
+            if(v->left == nullptr)
+            {
+                int sub=0;
+                {
+                    if(v->right != nullptr)
+                    {
+                        sub=v->right->num_of_elements_in_sub_tree;
+                    }
+                }
+                return (v->num_of_elements_in_sub_tree)-sub;
+            }
+            else
+            {
+                return lowRankAid(key, v->left);
+            }
+        }
+    }
+
+    int highRank(T key)
+    {
+        return highRankAid(key, root);
+    }
+
+    int highRankAid(T key, Node* v)
+    {
+        if (v == nullptr)
+        {
+            return 0;
+        }
+        if (key < v->key)
+        {
+            return highRankAid(key, v->left);
+        }
+
+        else if (key>v->key)
+        {
+            if(v->left!= nullptr)
+            {
+                return 1 + v->left->num_of_elements_in_sub_tree + highRankAid(key, v->right);
+            }
+            return 1 + highRankAid(key,v->right);
+        }
+        else
+        if(v->left == nullptr)
+        {
+            int sub=0;
+            {
+                if(v->right != nullptr)
+                {
+                    sub=v->right->num_of_elements_in_sub_tree;
+                }
+            }
+            return (v->num_of_elements_in_sub_tree)-sub;
+        }
+        else
+        {
+            return highRankAid(key, v->right)+1+v->left->num_of_elements_in_sub_tree;
+        }
+    }
+    //if we are on a node and need to find the predecessor:
+    Node* findFirst(Node* v,T key)
+    {
+        if(findNodeAid(v->left,key) == nullptr)
+        {
+            return v;
+        }
+        return findFirst(findNodeAid(v->left,key));
+    }
+
+    Node* findLast(Node* v,T key)
+    {
+        if(findNodeAid(v->right,key) == nullptr)
+        {
+            return v;
+        }
+        return findFirst(findNodeAid(v->right,key));
     }
 
     void update_num_of_elements_in_subtree(Node * v)
@@ -112,6 +231,7 @@ public:
     {
         return getSumOfSmallerUtil(key,0, root);
     }
+
 
     int getSumOfSmallerUtil(T& key, int res, Node * v)
     {
@@ -148,6 +268,7 @@ public:
     }
 
 
+
 //**********************************************************************************************************************
 //----------------------------------------------Balancing---------------------------------------------------------------
 //**********************************************************************************************************************
@@ -170,7 +291,8 @@ public:
     }
 
     /** A function used in order to get the node's height. */
-    int height(Node* v) const{
+    int height(Node* v) const
+    {
         int h =0;
         if (v != nullptr)
         {
@@ -183,12 +305,14 @@ public:
     }
 
     /** calculating node's balance factor.*/
-    int getBalanceFactor(Node *t){
+    int getBalanceFactor(Node *t)
+    {
         int l_height = height(t->left);
         int r_height = height(t->right);
         int b_factor = l_height - r_height;
         return b_factor;
     }
+
 
 //**********************************************************************************************************************
 //----------------------------------------------Rotating----------------------------------------------------------------
@@ -237,6 +361,8 @@ public:
 //----------------------------------------------Searching---------------------------------------------------------------
 //**********************************************************************************************************************
 
+
+
     /** A function used in order to find the minimum of the tree. */
     Node* findMin(Node * v) const
     {
@@ -262,14 +388,46 @@ public:
     /** A function used in order to search a specific node on the tree,given its key. */
     Node* findNodeAid(Node *v,T &key) const
     {
-        if (v == nullptr) return nullptr;
-        if(v->key == key) return v;
+        if (v == nullptr)
+        {
+            return nullptr;
+        }
+        if(v->key == key)
+        {
+            return v;
+        }
         else if (v->key < key)
         {
             return findNodeAid(v->right, key);
         }
         else{
             return findNodeAid(v->left,key);
+        }
+    }
+
+
+    Node* findNodeByRank(int rank)
+    {
+        return findNodeByRankAid(root,rank);
+    }
+    Node* findNodeByRankAid(Node* v, int rank)
+    {
+        if(v == nullptr)
+        {
+            return nullptr;
+        }
+        int size_of_left_tree=v->left->num_of_elements_in_sub_tree;
+        if(size_of_left_tree>rank)
+        {
+            return findNodeByRankAid(v->left,rank);
+        }
+        else if(size_of_left_tree<rank)
+        {
+            return findNodeByRankAid(v->right,rank-size_of_left_tree-1);
+        }
+        else
+        {
+            return v;
         }
     }
 
@@ -417,8 +575,9 @@ public:
 
 
 
-
-
 };
 
 #endif //AVL_TREE_H
+
+
+

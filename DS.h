@@ -13,7 +13,8 @@
 
 using namespace std;
 
-class PlayersManager{
+class PlayersManager
+        {
 private:
     UnionFind<Box> uni;
     Box system_box;
@@ -135,6 +136,38 @@ public:
      void Quit()
      {
         delete tomb;
+    }
+
+    StatusType GetPercentOfPlayersWithScoreInBounds(void *DS, int GroupID, int score, int lowerLevel, int higherLevel,
+                                                    double * players)
+    {
+        if(DS== nullptr || GroupID<0 || GroupID>uni.getUniverseSize())
+        {
+            return INVALID_INPUT;
+        }
+        AVL<int>* avl= nullptr;
+        if(GroupID==0)
+        {
+            avl= system_box.score_array[score];
+        }
+        else
+        {
+            avl= uni.find_team_leader(GroupID)->box->score_array[score];
+        }
+        avl->insert(lowerLevel);
+        avl->insert(higherLevel);
+        int low_rank=avl->lowRank(lowerLevel);
+        int high_rank= avl->highRank(higherLevel);
+        double count_between_level=high_rank-low_rank-1;
+        avl->remove(lowerLevel);
+        avl->remove(higherLevel);
+        if(count_between_level<=0)
+        {
+            return FAILURE;
+        }
+        int size_of_avl=avl->getSize();
+        *players=(count_between_level/size_of_avl)*100;
+        return SUCCESS;
     }
 };
 
