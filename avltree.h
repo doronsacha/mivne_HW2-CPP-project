@@ -67,42 +67,6 @@ public:
         size=0;
     }
 
-    int getRank(T key)
-    {
-        return getRankUtil(key,0, root);
-    }
-
-    int getRankUtil(T& key, int res, Node * v)
-    {
-        if (v == nullptr)
-        {
-            return 0;
-        }
-        if(v->key == key && v->left != nullptr)
-        {
-            return 1+ v->left->num_of_elements_in_sub_tree + res;
-        }
-        else if(v->key == key)
-        {
-            return 1+res;
-        }
-        else if (v->key < key)
-        {
-            if(v->left != nullptr)
-            {
-                return getRankUtil(key, 1 + v->left->num_of_elements_in_sub_tree + res, v->right);
-            }
-            else
-            {
-                return getRankUtil(key, 1 + res, v->right);
-            }
-        }
-        else
-        {
-            return getRankUtil(key,res,v->left);
-        }
-    }
-
     int lowRank(T key)
     {
         return lowRankAid(key, root);
@@ -188,6 +152,7 @@ public:
             return highRankAid(key, v->right)+1+v->left->num_of_elements_in_sub_tree;
         }
     }
+
     //if we are on a node and need to find the predecessor:
     Node* findFirst(Node* v,T key)
     {
@@ -405,7 +370,6 @@ public:
         }
     }
 
-
     Node* findNodeByRank(int rank)
     {
         return findNodeByRankAid(root,rank);
@@ -431,6 +395,52 @@ public:
         }
     }
 
+    int getSum(int rank)
+    {
+        return getSumAid(rank,root,0);
+    }
+
+    int getSumAid(int rank, Node* v,int curr_rank)
+    {
+        if(v== nullptr)
+        {
+            return 0;
+        }
+        if(v->left!= nullptr)
+        {
+            curr_rank+=v->left->num_of_elements_in_sub_tree + 1;
+        }
+        if(v->left== nullptr)
+        {
+            curr_rank +=1;
+        }
+        if(curr_rank<rank)
+        {
+            if(v->left!= nullptr)
+            {
+                return v->left->sum_of_smaller +v->key + getSumAid(rank,v->right,curr_rank);
+            }
+            else
+            {
+                return v->key + getSumAid(rank,v->right,curr_rank);
+            }
+        }
+        if(curr_rank>rank)
+        {
+            return getSumAid(rank,v->left,0);
+        }
+        if(curr_rank == rank)
+        {
+            if(v->left!= nullptr)
+            {
+                return v->left->sum_of_smaller +v->key;
+            }
+            else
+            {
+                return v->key;
+            }
+        }
+    }
 //**********************************************************************************************************************
 //----------------------------------------------Aid functions---------------------------------------------------------------
 //**********************************************************************************************************************

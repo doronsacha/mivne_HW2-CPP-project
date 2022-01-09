@@ -42,7 +42,14 @@ public:
         return SUCCESS;
     }
 
-
+    StatusType mergeGroup(int groupid1, int groupid2)
+    {
+        if (groupid1 <=0 || groupid2<= 0 || groupid1 > uni.getUniverseSize() || groupid2 > uni.getUniverseSize())
+        {
+            return INVALID_INPUT;
+        }
+        uni.
+    }
     StatusType addPlayer(int PlayerID, int GroupID, int score) // DONE COMPLETELY
     {
         if (GroupID <= 0 || GroupID > uni.getUniverseSize() || PlayerID <= 0 || score <= 0 || score > scale )
@@ -53,8 +60,8 @@ public:
         {
             return FAILURE;
         }
-        system_box.insert_player_to_box();
-        uni.find_team_leader(GroupID-1)->box->insert_player_to_box();
+        system_box.insert_player_to_box(score);
+        uni.find_team_leader(GroupID-1)->box->insert_player_to_box(score);
         players_in_ds.insert(PlayerID,new PlayerInfo(PlayerID,GroupID,score,0));
         return SUCCESS;
     }
@@ -125,23 +132,10 @@ public:
         return SUCCESS;
     }
 
-    StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel,double  * players);
-    StatusType averageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel);
-
-
-
-     //should be enough, because each Box Destructor free all the memory he uses,
-     // each tree has only ints so no memory allocated.
-     // we will check it more when we'll be able to run using their main.cpp
-     void Quit()
-     {
-        delete tomb;
-    }
-
-    StatusType GetPercentOfPlayersWithScoreInBounds(void *DS, int GroupID, int score, int lowerLevel, int higherLevel,
+    StatusType GetPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel,
                                                     double * players)
     {
-        if(DS== nullptr || GroupID<0 || GroupID>uni.getUniverseSize())
+        if( GroupID<0 || GroupID>uni.getUniverseSize())
         {
             return INVALID_INPUT;
         }
@@ -165,10 +159,55 @@ public:
         {
             return FAILURE;
         }
-        int size_of_avl=avl->getSize();
+        int size_of_avl=avl->getSize()+system_box.score_with_lvl_0[score];
         *players=(count_between_level/size_of_avl)*100;
         return SUCCESS;
     }
+
+    StatusType averageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel)
+    {
+        if( GroupID<0 || GroupID>uni.getUniverseSize())
+        {
+            return INVALID_INPUT;
+        }
+        if(m > uni.find_team_leader(GroupID)->box->size)
+        {
+            return FAILURE;
+        }
+        AVL<int> avl;
+        if(GroupID==0)
+        {
+            avl= system_box.players_in_group;
+        }
+        else
+        {
+            avl= uni.find_team_leader(GroupID)->box->players_in_group;
+        }
+        if(avl.getSize()-m<1)
+        {
+            *avgLevel=((double)(avl.getSum(avl.getSize())))/m;
+            return SUCCESS;
+        }
+        double low_sum= avl.getSum(avl.getSize()-m);
+        double final=uni.find_team_leader(GroupID)->box->total_level -low_sum;
+        *avgLevel=(final/m);
+        return SUCCESS;
+    }
+
+
+
+    StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
+                               int * LowerBoundPlayers, int * HigherBoundPlayers);
+
+     //should be enough, because each Box Destructor free all the memory he uses,
+     // each tree has only ints so no memory allocated.
+     // we will check it more when we'll be able to run using their main.cpp
+     void Quit()
+     {
+        delete tomb;
+    }
+
+
 };
 
 

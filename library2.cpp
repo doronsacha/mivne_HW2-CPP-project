@@ -65,7 +65,7 @@ StatusType GetPercentOfPlayersWithScoreInBounds(void *DS, int GroupID, int score
     {
         return INVALID_INPUT;
     }
-    return ((PlayersManager*)DS)->getPercentOfPlayersWithScoreInBounds(GroupID,score,lowerLevel,higherLevel,players);
+    return ((PlayersManager*)DS)->GetPercentOfPlayersWithScoreInBounds(GroupID,score,lowerLevel,higherLevel,players);
 }
 
 StatusType AverageHighestPlayerLevelByGroup(void *DS, int GroupID, int m, double * level)
@@ -77,6 +77,15 @@ StatusType AverageHighestPlayerLevelByGroup(void *DS, int GroupID, int m, double
     return ((PlayersManager*)DS)->averageHighestPlayerLevelByGroup(GroupID,m,level);
 }
 
+StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
+                           int * LowerBoundPlayers, int * HigherBoundPlayers)
+{
+    if (DS==NULL)
+    {
+        return INVALID_INPUT;
+    }
+    return SUCCESS;
+}
 void Quit(void** DS)
 {
     delete (*((PlayersManager**)DS));

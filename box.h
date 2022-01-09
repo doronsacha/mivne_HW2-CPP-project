@@ -9,20 +9,25 @@
 
 class Box{
 public:
+    int* score_with_lvl_0;
     AVL<int> ** score_array;
     AVL<int> players_in_group;
     int num_of_players_with_lvl_0;
     int size;// we would name it "total_players",but need to leave it "size" due to Unionfind implementation
     NodeU<Box> *head;
     int scale;
-
-    explicit Box(int scale) : score_array(new AVL<int> *[scale]) , players_in_group(),
+    int total_level;
+    explicit Box(int scale) : players_in_group(),
     num_of_players_with_lvl_0(0), size(0) , head(nullptr),scale(scale)
     {
+        score_array= new AVL<int>* [scale]();
+
         for(int i=0; i<scale;i++)
         {
-            score_array[i] = new AVL<int>;
+            score_array[i] = new AVL<int>();
         }
+        score_with_lvl_0=new int[scale]();
+        total_level=0;
     }
     ~Box()
     {
@@ -32,7 +37,11 @@ public:
                 delete score_array[i];
         }
         delete[] score_array;
+        delete score_with_lvl_0;
     }
+
+
+
     void merge_boxes(Box * other, int scale) //Not Done
     {
         if(other->size == 0)
@@ -44,10 +53,15 @@ public:
         for(int i=0; i<scale; i++)
         {
             merge_trees_inside_box_pointer(i,other->score_array[i]);
-            delete other->score_array[i];
+            delete other->score_array[i];// TODO: if problem in valgrind can be there
         }
         size+=other->size;
+        total_level+=other->total_level;
         num_of_players_with_lvl_0+=other->num_of_players_with_lvl_0;
+        for(int i=0;i<scale;i++)
+        {
+            score_with_lvl_0[i]+=other->score_with_lvl_0[i];
+        }
         delete other;
     }
 
@@ -80,18 +94,18 @@ public:
         }
     }
 
-    void merge_trees_inside_box_ref(AVL<int> &other)
+    void merge_trees_inside_box_ref(AVL<int> other)
     {
         int x=0;
         int other_tree_size = other.getSize();
-        int * other_tree_lvls = new int[other_tree_size];
+        int * other_tree_lvls = new int[other_tree_size]();
         other.transform_to_array(other_tree_lvls,&x);
 
         x=0;
         int our_tree_size = players_in_group.getSize();
-        int * our_tree_lvls = new int[our_tree_size];
+        int * our_tree_lvls = new int[our_tree_size]();
         players_in_group.transform_to_array(our_tree_lvls,&x);
-        int * total_lvls = new int[other_tree_size+our_tree_size];
+        int * total_lvls = new int[other_tree_size+our_tree_size]();
         merge(other_tree_lvls,our_tree_lvls,total_lvls,other_tree_size,our_tree_size);
         delete[] other_tree_lvls;
         delete[] our_tree_lvls;
@@ -115,12 +129,16 @@ public:
     {
         int x=0;
         int other_tree_size = other->getSize();
-        int * other_tree_lvls = new int[other_tree_size];
+        if(other_tree_size==0)
+        {
+            return ;
+        }
+        int * other_tree_lvls = new int[other_tree_size]();
         other->transform_to_array(other_tree_lvls,&x);
 
         x=0;
         int our_tree_size = score_array[idx]->getSize();
-        int * our_tree_lvls = new int[our_tree_size];
+        int * our_tree_lvls = new int[our_tree_size]();
         score_array[idx]->transform_to_array(our_tree_lvls,&x);
         int * total_lvls = new int[other_tree_size+our_tree_size];
         merge(other_tree_lvls,our_tree_lvls,total_lvls,other_tree_size,our_tree_size);
@@ -135,30 +153,32 @@ public:
         score_array[idx]->update_tree_extra_data_post_order();
     }
 
-    void insert_player_to_box()
+    void insert_player_to_box(int score)
     {
         size++;
-        num_of_players_with_lvl_0++;
+        score_with_lvl_0[score]++;
     }
     void remove_player_from_box(int score, int level)
     {
         if(level == 0)
         {
-            num_of_players_with_lvl_0--;
+            score_with_lvl_0[score]--;
             size--;
         }
         else
         {
             score_array[score]->remove(level);
             players_in_group.remove(level);
+            total_level-=level;
             size--;
         }
     }
     void update_lvl_for_player_lvl_0(int new_level,int score)
     {
-        num_of_players_with_lvl_0--;
+        score_with_lvl_0[score]--;
         // update in the tree that inside a score
         score_array[score]->insert(new_level);
+        total_level+=new_level;
         // update in the tree that includes all the player in the box
         players_in_group.insert(new_level);
     }
@@ -166,6 +186,7 @@ public:
     void update_lvl_for_player_above_lvl_0(int prev_lvl, int additional_lvl, int score)
     {
         int new_lvl = prev_lvl + additional_lvl;
+        total_level+=additional_lvl;
         // update in the tree that inside a score
         score_array[score]->remove(prev_lvl);
         score_array[score]->insert(new_lvl);
