@@ -153,25 +153,6 @@ public:
         }
     }
 
-    //if we are on a node and need to find the predecessor:
-    Node* findFirst(Node* v,T key)
-    {
-        if(findNodeAid(v->left,key) == nullptr)
-        {
-            return v;
-        }
-        return findFirst(findNodeAid(v->left,key));
-    }
-
-    Node* findLast(Node* v,T key)
-    {
-        if(findNodeAid(v->right,key) == nullptr)
-        {
-            return v;
-        }
-        return findFirst(findNodeAid(v->right,key));
-    }
-
     void update_num_of_elements_in_subtree(Node * v)
     {
         int updating = 1;
@@ -190,29 +171,6 @@ public:
         if(v->right != nullptr)
             sum += v->right->sum_of_smaller;
         v->sum_of_smaller = sum;
-    }
-
-    int getSumOfSmaller(T key)
-    {
-        return getSumOfSmallerUtil(key,0, root);
-    }
-
-
-    int getSumOfSmallerUtil(T& key, int res, Node * v)
-    {
-        if (v == nullptr) return 0;
-        if(v->key == key && v->left != nullptr) return v->key + v->left->sum_of_smaller + res;
-        else if(v->key == key) return v->key+res;
-        else if (v->key < key)
-        {
-            if(v->left != nullptr)
-                return getSumOfSmallerUtil(key,v->key+ v->left->sum_of_smaller+res,v->right);
-            else
-                return getSumOfSmallerUtil(key, v->key+res, v->right);
-        }
-        else{
-            return getSumOfSmallerUtil(key,res,v->left);
-        }
     }
 
     Node* findNode(T key)
@@ -367,31 +325,6 @@ public:
         }
         else{
             return findNodeAid(v->left,key);
-        }
-    }
-
-    Node* findNodeByRank(int rank)
-    {
-        return findNodeByRankAid(root,rank);
-    }
-    Node* findNodeByRankAid(Node* v, int rank)
-    {
-        if(v == nullptr)
-        {
-            return nullptr;
-        }
-        int size_of_left_tree=v->left->num_of_elements_in_sub_tree;
-        if(size_of_left_tree>rank)
-        {
-            return findNodeByRankAid(v->left,rank);
-        }
-        else if(size_of_left_tree<rank)
-        {
-            return findNodeByRankAid(v->right,rank-size_of_left_tree-1);
-        }
-        else
-        {
-            return v;
         }
     }
 
@@ -582,9 +515,6 @@ public:
         (*i)++;
         transform_to_array_helper(firstNode->right,lvl_arr,i);
     }
-
-
-
 };
 
 #endif //AVL_TREE_H

@@ -42,14 +42,7 @@ public:
         return SUCCESS;
     }
 
-    StatusType mergeGroup(int groupid1, int groupid2)
-    {
-        if (groupid1 <=0 || groupid2<= 0 || groupid1 > uni.getUniverseSize() || groupid2 > uni.getUniverseSize())
-        {
-            return INVALID_INPUT;
-        }
-        uni.
-    }
+
     StatusType addPlayer(int PlayerID, int GroupID, int score) // DONE COMPLETELY
     {
         if (GroupID <= 0 || GroupID > uni.getUniverseSize() || PlayerID <= 0 || score <= 0 || score > scale )
