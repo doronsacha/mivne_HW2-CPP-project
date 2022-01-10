@@ -38,7 +38,7 @@ public:
         {
             return INVALID_INPUT;
         }
-        uni.union_groups(GroupID1-1,GroupID2-1,scale);
+        uni.union_groups(GroupID1,GroupID2,scale);
         return SUCCESS;
     }
 
@@ -54,7 +54,7 @@ public:
             return FAILURE;
         }
         system_box.insert_player_to_box(score);
-        uni.find_team_leader(GroupID-1)->box->insert_player_to_box(score);
+        uni.find_team_leader(GroupID)->box->insert_player_to_box(score);
         players_in_ds.insert(PlayerID,new PlayerInfo(PlayerID,GroupID,score,0));
         return SUCCESS;
     }
@@ -73,7 +73,7 @@ public:
         //delete the player from the system box
         system_box.remove_player_from_box(player->getScore(),player->getLevel());
         //delete the player from the group box
-        uni.find_team_leader(player->getGroupId()-1)->box->remove_player_from_box(player->getScore(),player->getLevel());
+        uni.find_team_leader(player->getGroupId())->box->remove_player_from_box(player->getScore(),player->getLevel());
         players_in_ds.remove(PlayerID);
         delete player;
         return SUCCESS;
@@ -93,12 +93,12 @@ public:
         if(player->getLevel() == 0)
         {
             system_box.update_lvl_for_player_lvl_0(LevelIncrease, player->getScore());
-            uni.find_team_leader(player->getGroupId()-1)->box->update_lvl_for_player_lvl_0(LevelIncrease, player->getScore());
+            uni.find_team_leader(player->getGroupId())->box->update_lvl_for_player_lvl_0(LevelIncrease, player->getScore());
         }
         else
         {
             system_box.update_lvl_for_player_above_lvl_0(player->getLevel(),LevelIncrease, player->getScore());
-            uni.find_team_leader(player->getGroupId()-1)->box->update_lvl_for_player_above_lvl_0(player->getLevel(),LevelIncrease, player->getScore());
+            uni.find_team_leader(player->getGroupId())->box->update_lvl_for_player_above_lvl_0(player->getLevel(),LevelIncrease, player->getScore());
         }
         player->setLevel(player->getLevel()+LevelIncrease);
         return SUCCESS;
@@ -118,7 +118,7 @@ public:
         if (player->getLevel() != 0)
         {
             system_box.change_score_in_box(player->getScore(), NewScore, player->getLevel());
-            uni.find_team_leader(player->getGroupId()-1)->box->change_score_in_box(player->getScore(), NewScore,
+            uni.find_team_leader(player->getGroupId())->box->change_score_in_box(player->getScore(), NewScore,
                                                                                 player->getLevel());
         }
         player->setScore(NewScore);
@@ -163,7 +163,7 @@ public:
         {
             return INVALID_INPUT;
         }
-        if(m > uni.find_team_leader(GroupID)->box->size)
+        if(m > uni.find_team_leader(GroupID)->box->num_of_players_with_lvl_0 + uni.find_team_leader(GroupID)->box->players_in_group.getSize())
         {
             return FAILURE;
         }

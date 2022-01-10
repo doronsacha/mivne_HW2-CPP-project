@@ -515,6 +515,37 @@ public:
         (*i)++;
         transform_to_array_helper(firstNode->right,lvl_arr,i);
     }
+
+    void set_size(int num)
+    {
+        size=num;
+    }
+
+    void insertZeros(T key)
+    {
+        root = insertUtil(root,key);
+        size++;
+    }
+    Node* insertUtilForZero(Node * r, T key)
+    {
+        if (r == nullptr) {
+            r = new Node;
+            r->key = key;
+            r->sum_of_smaller=key;
+            r->num_of_elements_in_sub_tree=1;
+            r->left = nullptr;
+            r->right = nullptr;
+            return r;
+        }
+        else if (key < r->key)
+        {
+            r->left = insertUtil(r->left, key);
+            r = balance(r);
+        } else if (r->key <= key) {
+            r->right = insertUtil(r->right, key);
+            r = balance(r);
+        } return r;
+    }
 };
 
 #endif //AVL_TREE_H

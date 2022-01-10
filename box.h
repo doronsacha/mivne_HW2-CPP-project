@@ -41,7 +41,6 @@ public:
     }
 
 
-
     void merge_boxes(Box * other, int scale) //Not Done
     {
         if(other->size == 0)
@@ -53,7 +52,7 @@ public:
         for(int i=0; i<scale; i++)
         {
             merge_trees_inside_box_pointer(i,other->score_array[i]);
-            delete other->score_array[i];// TODO: if problem in valgrind can be there
+            //delete other->score_array[i];// TODO: if problem in valgrind can be there
         }
         size+=other->size;
         total_level+=other->total_level;
@@ -64,7 +63,6 @@ public:
         }
         delete other;
     }
-
     static void merge(const int * a,const int *b, int *c, int sizeA,int sizeB)
     {
         int ia,ib,ic;
@@ -121,7 +119,7 @@ public:
     {
         for(int i=0; i<desired_size; i++)
         {
-            tree.insert(0);
+            tree.insertZeros(0);
         }
     }
 
@@ -129,9 +127,9 @@ public:
     {
         int x=0;
         int other_tree_size = other->getSize();
-        if(other_tree_size==0)
+        if(other_tree_size == 0)
         {
-            return ;
+            return;
         }
         int * other_tree_lvls = new int[other_tree_size]();
         other->transform_to_array(other_tree_lvls,&x);
@@ -155,27 +153,27 @@ public:
 
     void insert_player_to_box(int score)
     {
-        size++;
         score_with_lvl_0[score]++;
+        num_of_players_with_lvl_0++;
     }
     void remove_player_from_box(int score, int level)
     {
         if(level == 0)
         {
             score_with_lvl_0[score]--;
-            size--;
+            num_of_players_with_lvl_0--;
         }
         else
         {
             score_array[score]->remove(level);
             players_in_group.remove(level);
             total_level-=level;
-            size--;
         }
     }
     void update_lvl_for_player_lvl_0(int new_level,int score)
     {
         score_with_lvl_0[score]--;
+        num_of_players_with_lvl_0--;
         // update in the tree that inside a score
         score_array[score]->insert(new_level);
         total_level+=new_level;
@@ -199,6 +197,11 @@ public:
     {
         score_array[prev_score]->remove(lvl);
         score_array[new_score]->insert(lvl);
+        if(lvl==0)
+        {
+            score_with_lvl_0[prev_score]--;
+            score_with_lvl_0[new_score]++;
+        }
     }
 
 };

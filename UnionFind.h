@@ -19,11 +19,11 @@ private:
     T ** groups;
     int scale;
 public:
-    UnionFind(int n, int scale) : universe_size(n), scale(scale)
+    UnionFind(int n, int scale) : universe_size(n+1), scale(scale)
     {
-        elements = new NodeU<T>*[n];//array of pointers to NodeUs
-        groups = new T*[n]; // array of T's pointers
-        for(int i=0; i<n; i++)
+        elements = new NodeU<T>*[n+1];//array of pointers to NodeUs
+        groups = new T*[n+1]; // array of T's pointers
+        for(int i=1; i<n+1; i++)
         {
             make_set(i, scale);
         }
@@ -38,7 +38,7 @@ public:
 
     void clear_elements()
     {
-        for(int i=0; i<universe_size; i++)
+        for(int i=1; i<universe_size; i++)
         {
             if(elements[i]->father == nullptr)
             {
@@ -53,6 +53,7 @@ public:
         groups[id] = new T(scale);
         groups[id]->head = elements[id];
         elements[id]->box = groups[id];
+        elements[id]->box->size=1;
     }
 
     int find(int id)
