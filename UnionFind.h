@@ -40,7 +40,7 @@ public:
     {
         for(int i=1; i<universe_size; i++)
         {
-            if(elements[i]->father == nullptr)
+            if(elements[i]->father == nullptr && elements[i]->box != nullptr)
             {
                 delete elements[i]->box;
             }

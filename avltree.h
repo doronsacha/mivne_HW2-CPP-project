@@ -358,11 +358,11 @@ public:
                 return v->key + getSumAid(rank,v->right,curr_rank);
             }
         }
-        if(curr_rank>rank)
+        else if(curr_rank>rank)
         {
             return getSumAid(rank,v->left,0);
         }
-        if(curr_rank == rank)
+        else
         {
             if(v->left!= nullptr)
             {

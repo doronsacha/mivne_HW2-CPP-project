@@ -132,7 +132,7 @@ public:
         {
             return INVALID_INPUT;
         }
-        AVL<int>* avl= nullptr;
+        AVL<int>* avl;
         if(GroupID==0)
         {
             avl= system_box.score_array[score];
@@ -140,6 +140,11 @@ public:
         else
         {
             avl= uni.find_team_leader(GroupID)->box->score_array[score];
+        }
+        if(avl->getSize() == 0)
+        {
+            *players =0;
+            return SUCCESS;
         }
         avl->insert(lowerLevel);
         avl->insert(higherLevel);
@@ -163,25 +168,30 @@ public:
         {
             return INVALID_INPUT;
         }
-        if(m > uni.find_team_leader(GroupID)->box->num_of_players_with_lvl_0 + uni.find_team_leader(GroupID)->box->players_in_group.getSize())
+        if(GroupID != 0 && m > uni.find_team_leader(GroupID)->box->num_of_players_with_lvl_0 + uni.find_team_leader(GroupID)->box->players_in_group.getSize())
         {
             return FAILURE;
         }
-        AVL<int> avl;
+        AVL<int> *avl;
         if(GroupID==0)
         {
-            avl= system_box.players_in_group;
+            avl= &(system_box.players_in_group);
         }
         else
         {
-            avl= uni.find_team_leader(GroupID)->box->players_in_group;
+            avl= &(uni.find_team_leader(GroupID)->box->players_in_group);
         }
-        if(avl.getSize()-m<1)
+        if(avl->getSize() == 0)
         {
-            *avgLevel=((double)(avl.getSum(avl.getSize())))/m;
+            *avgLevel =0;
             return SUCCESS;
         }
-        double low_sum= avl.getSum(avl.getSize()-m);
+        if(avl->getSize()-m<1)
+        {
+            *avgLevel=((double)(avl->getSum(avl->getSize())))/m;
+            return SUCCESS;
+        }
+        double low_sum= avl->getSum(avl->getSize()-m);
         double final=uni.find_team_leader(GroupID)->box->total_level -low_sum;
         *avgLevel=(final/m);
         return SUCCESS;

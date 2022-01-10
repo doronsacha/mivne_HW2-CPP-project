@@ -143,7 +143,7 @@ public:
         delete[] other_tree_lvls;
         delete[] our_tree_lvls;
         other->treeClear();
-        delete other;
+        //delete other;
         score_array[idx]->treeClear();
         create_empty_tree(*score_array[idx],our_tree_size+other_tree_size);
         x=0;
