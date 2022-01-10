@@ -482,8 +482,8 @@ public:
     {
         if (r == nullptr)
             return;
-        postorderAid(r->left);
-        postorderAid(r->right);
+        update_tree_extra_data_post_order_aid(r->left);
+        update_tree_extra_data_post_order_aid(r->right);
         update_sum_of_smaller(r);
         update_num_of_elements_in_subtree(r);
     }

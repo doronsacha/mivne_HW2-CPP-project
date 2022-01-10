@@ -192,7 +192,7 @@ public:
 
     StatusType averageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel)
     {
-        if( GroupID<0 || GroupID>uni.getUniverseSize() || avgLevel== nullptr || m< 0)
+        if( GroupID<0 || GroupID>uni.getUniverseSize() || avgLevel== nullptr || m<= 0)
         {
             return INVALID_INPUT;
         }
