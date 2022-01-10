@@ -124,6 +124,8 @@ public:
         {
             system_box.score_with_lvl_0[player->getScore()]--;
             uni.find_team_leader(player->getGroupId())->box->score_with_lvl_0[player->getScore()]--;
+            system_box.score_with_lvl_0[NewScore]++;
+            uni.find_team_leader(player->getGroupId())->box->score_with_lvl_0[NewScore]++;
         }
         player->setScore(NewScore);
         return SUCCESS;
