@@ -20,19 +20,20 @@ public:
     explicit Box(int scale) : players_in_group(),
     num_of_players_with_lvl_0(0), size(0) , head(nullptr),scale(scale)
     {
-        score_array= new AVL<int>* [scale]();
+        score_array= new AVL<int>* [scale+1]();
 
-        for(int i=0; i<scale;i++)
+        for(int i=0; i<=scale;i++)
         {
             score_array[i] = new AVL<int>();
         }
-        score_with_lvl_0=new int[scale]();
+        score_with_lvl_0=new int[scale+1]();
         total_level=0;
     }
     ~Box()
     {
-        for(int i=0; i<scale; i++)
+        for(int i=0; i<=scale; i++)
         {
+
             if(score_array[i] != nullptr)
                 delete score_array[i];
         }
@@ -44,7 +45,7 @@ public:
     void merge_boxes(Box * other, int scale) //Not Done
     {
         merge_trees_inside_box_ref(other->players_in_group);
-        for(int i=0; i<scale; i++)
+        for(int i=0; i<=scale; i++)
         {
             merge_trees_inside_box_pointer(i,other->score_array[i]);
             //delete other->score_array[i];// TODO: if problem in valgrind can be there
@@ -52,7 +53,7 @@ public:
         size+=other->size;
         total_level+=other->total_level;
         num_of_players_with_lvl_0+=other->num_of_players_with_lvl_0;
-        for(int i=0;i<scale;i++)
+        for(int i=0;i<=scale;i++)
         {
             score_with_lvl_0[i]+=other->score_with_lvl_0[i];
         }

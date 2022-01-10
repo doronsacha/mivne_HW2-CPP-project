@@ -1,7 +1,7 @@
 //
 // Created by tsahiedri on 06/01/2022.
 //
-/*-
+
 #include "DS.h"
 #include "avltree.h"
 #include <cassert>
@@ -21,9 +21,8 @@ int main()
     assert(player.GetPercentOfPlayersWithScoreInBounds(0, 3 ,1, 5,&res)==SUCCESS);
     assert(res==50.00);
     assert(player.removePlayer(20)==SUCCESS);
-    assert(player.averageHighestPlayerLevelByGroup(1,3,&res)==SUCCESS);
+    //assert(player.averageHighestPlayerLevelByGroup(1,3,&res)==SUCCESS);
     cout<< res<<endl;
     return 0;
 }
 
-*/
