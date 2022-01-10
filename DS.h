@@ -16,15 +16,15 @@ using namespace std;
 class PlayersManager
 {
 private:
+    int scale;
     UnionFind<Box> uni;
     Box system_box;
     HashTable<PlayerInfo*> players_in_ds; // the group id in each player is the group from the beginning, because we have find leader.
     PlayerInfo* tomb;
-    int scale;
 public:
-    PlayersManager(int k, int scale_) : uni(UnionFind<Box>(k,scale_)), tomb(new PlayerInfo(-1,-1,-1,-1)),
-                                        players_in_ds(HashTable<PlayerInfo*> (tomb)), system_box(Box(scale_)), scale(scale_)
+    PlayersManager(int k, int scale_) : scale(scale_), uni(UnionFind<Box>(k,scale_)),system_box(Box(scale_)),players_in_ds(HashTable<PlayerInfo*>(new PlayerInfo(-1,-1,-1,-1)))
     {
+        tomb= new PlayerInfo(-1,-1,-1,-1);
         players_in_ds.setTomb(tomb);
     }
     ~PlayersManager()
@@ -133,18 +133,16 @@ public:
             return INVALID_INPUT;
         }
         AVL<int>* avl;
+        int num_zeros=0;
         if(GroupID==0)
         {
             avl= system_box.score_array[score];
+            num_zeros= system_box.score_with_lvl_0[score];
         }
         else
         {
             avl= uni.find_team_leader(GroupID)->box->score_array[score];
-        }
-        if(avl->getSize() == 0)
-        {
-            *players =0;
-            return SUCCESS;
+            num_zeros= uni.find_team_leader(GroupID)->box->score_with_lvl_0[score];
         }
         avl->insert(lowerLevel);
         avl->insert(higherLevel);
@@ -157,7 +155,7 @@ public:
         {
             return FAILURE;
         }
-        int size_of_avl= avl->getSize() + system_box.score_with_lvl_0[score];
+        int size_of_avl= avl->getSize() + num_zeros;
         *players=(count_between_level/size_of_avl)*100;
         return SUCCESS;
     }

@@ -43,11 +43,6 @@ public:
 
     void merge_boxes(Box * other, int scale) //Not Done
     {
-        if(other->size == 0)
-        {
-            delete other;
-            return;
-        }
         merge_trees_inside_box_ref(other->players_in_group);
         for(int i=0; i<scale; i++)
         {
@@ -96,6 +91,10 @@ public:
     {
         int x=0;
         int other_tree_size = other.getSize();
+        if(other_tree_size==0)
+        {
+            return ;
+        }
         int * other_tree_lvls = new int[other_tree_size]();
         other.transform_to_array(other_tree_lvls,&x);
 

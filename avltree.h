@@ -142,6 +142,10 @@ public:
             {
                 if(v->right != nullptr)
                 {
+                    if(v->right->key== key)
+                    {
+                         return 1+ highRankAid(key,v->right);
+                    }
                     sub=v->right->num_of_elements_in_sub_tree;
                 }
             }

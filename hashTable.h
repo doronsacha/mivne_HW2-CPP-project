@@ -133,7 +133,6 @@ public:
         int index = hash(id), k=1;
         while(arr[index] != nullptr && arr[index] != tombstone)
         {
-            T element=arr[index];
             int id_element= int(arr[index]->getPlayerId()); // needed conversion here
             if(id_element == id) //TODO: this is not just for the test this is important
             {
@@ -272,7 +271,6 @@ public:
 
     int find_upper(int current)
     {
-        int result=0;
         for(auto element:prime_possible_sizes)
         {
             if (element > current)
@@ -285,7 +283,6 @@ public:
 
     int find_lower(int current)
     {
-        int result=0;
         for(int i=POSSIBLE_SIZES-1; i>0; --i)
         {
             if (prime_possible_sizes[i] < current)
