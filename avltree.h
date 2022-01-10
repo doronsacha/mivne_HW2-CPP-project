@@ -364,7 +364,11 @@ public:
         }
         else if(curr_rank>rank)
         {
-            return getSumAid(rank,v->left,0);
+            if(v->left!= nullptr)
+            {
+                return getSumAid(rank, v->left, curr_rank - v->left->num_of_elements_in_sub_tree-1);
+            }
+            return getSumAid(rank,v->left,curr_rank-1);
         }
         else
         {
@@ -385,7 +389,7 @@ public:
     void preorderAid(Node* r){
         if (r == nullptr)
             return;
-        cout << r->key << "  ";
+        //cout << r->key << "  ";
         preorderAid(r->left);
         preorderAid(r->right);
     }
@@ -395,14 +399,14 @@ public:
             return;
         postorderAid(r->left);
         postorderAid(r->right);
-        cout << r->key << "  ";
+        //cout << r->key << "  ";
     }
 
     void inorderAid(Node* r){
         if (r == nullptr)
             return;
         inorderAid(r->left);
-        cout << r->key << "  ";
+        //cout << r->key << "  ";
         inorderAid(r->right);
     }
 
