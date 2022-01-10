@@ -118,8 +118,12 @@ public:
         if (player->getLevel() != 0)
         {
             system_box.change_score_in_box(player->getScore(), NewScore, player->getLevel());
-            uni.find_team_leader(player->getGroupId())->box->change_score_in_box(player->getScore(), NewScore,
-                                                                                 player->getLevel());
+            uni.find_team_leader(player->getGroupId())->box->change_score_in_box(player->getScore(), NewScore,player->getLevel());
+        }
+        if(player->getLevel()==0)
+        {
+            system_box.score_with_lvl_0[player->getScore()]--;
+            uni.find_team_leader(player->getGroupId())->box->score_with_lvl_0[player->getScore()]--;
         }
         player->setScore(NewScore);
         return SUCCESS;
@@ -132,31 +136,52 @@ public:
         {
             return INVALID_INPUT;
         }
+        if(lowerLevel<=0 || higherLevel<=0)
+        {
+            return GetNegativePercent(GroupID,score,lowerLevel,higherLevel,players);
+        }
         AVL<int>* avl;
+        AVL<int>* global_avl;
         int num_zeros=0;
         if(GroupID==0)
         {
             avl= system_box.score_array[score];
-            num_zeros= system_box.score_with_lvl_0[score];
+            global_avl=&system_box.players_in_group;
+            if(avl->getSize()==0)
+            {
+                *players=0;
+                return SUCCESS;
+            }
         }
         else
         {
             avl= uni.find_team_leader(GroupID)->box->score_array[score];
-            num_zeros= uni.find_team_leader(GroupID)->box->score_with_lvl_0[score];
+            global_avl= &uni.find_team_leader(GroupID)->box->players_in_group;
+            if(avl->getSize()==0)
+            {
+                *players=0;
+                return SUCCESS;
+            }
         }
         avl->insert(lowerLevel);
         avl->insert(higherLevel);
+        global_avl->insert(lowerLevel);
+        global_avl->insert(higherLevel);
         int low_rank=avl->lowRank(lowerLevel);
         int high_rank= avl->highRank(higherLevel);
+        int global_low=global_avl->lowRank(lowerLevel);
+        int global_high=global_avl->highRank(higherLevel);
         double count_between_level=high_rank-low_rank-1;
-        avl->remove(lowerLevel);
-        avl->remove(higherLevel);
-        if(count_between_level<=0)
+        double global_count_between=global_high-global_low-1;
+        if(global_count_between == 0)
         {
             return FAILURE;
         }
-        int size_of_avl= avl->getSize() + num_zeros;
-        *players=(count_between_level/size_of_avl)*100;
+        avl->remove(lowerLevel);
+        avl->remove(higherLevel);
+        global_avl->remove(lowerLevel);
+        global_avl->remove(higherLevel);
+        *players=(count_between_level/global_count_between)*100;
         return SUCCESS;
     }
 
@@ -195,7 +220,65 @@ public:
         return SUCCESS;
     }
 
+StatusType GetNegativePercent(int GroupID, int score, int lowerLevel, int higherLevel,double * players)
+{
+        if(higherLevel<0)
+        {
+            return FAILURE;
+        }
 
+        if(lowerLevel<0)
+        {
+            lowerLevel=0;
+        }
+        AVL<int>* avl;
+        AVL<int>* global_avl;
+        double num_zero;
+        int global_num_zero;
+        if(GroupID==0)
+        {
+            avl= system_box.score_array[score];
+            global_avl=&system_box.players_in_group;
+            num_zero=system_box.score_with_lvl_0[score];
+            global_num_zero=system_box.num_of_players_with_lvl_0;
+        }
+        else
+        {
+            avl= uni.find_team_leader(GroupID)->box->score_array[score];
+            global_avl= &uni.find_team_leader(GroupID)->box->players_in_group;
+            num_zero=uni.find_team_leader(GroupID)->box->score_with_lvl_0[score];
+            global_num_zero=uni.find_team_leader(GroupID)->box->num_of_players_with_lvl_0;
+        }
+        if(lowerLevel==0 && higherLevel==0)
+        {
+            *players=(num_zero/global_num_zero)*100;
+            return SUCCESS;
+        }
+        if(lowerLevel==0 && higherLevel!=0)
+        {
+            avl->insert(lowerLevel);
+            avl->insert(higherLevel);
+            global_avl->insert(lowerLevel);
+            global_avl->insert(higherLevel);
+            int low_rank=avl->lowRank(lowerLevel);
+            int high_rank= avl->highRank(higherLevel);
+            int global_low=global_avl->lowRank(lowerLevel);
+            int global_high=global_avl->highRank(higherLevel);
+            double count_between_level=high_rank-low_rank-1+num_zero;
+            double global_count_between=global_high-global_low-1+global_num_zero;
+            if(global_count_between == 0)
+            {
+                return FAILURE;
+            }
+            avl->remove(lowerLevel);
+            avl->remove(higherLevel);
+            global_avl->remove(lowerLevel);
+            global_avl->remove(higherLevel);
+            *players=(count_between_level/global_count_between)*100;
+            return SUCCESS;
+        }
+
+}
 
     StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
                                int * LowerBoundPlayers, int * HigherBoundPlayers);
