@@ -37,7 +37,7 @@ public:
                 delete score_array[i];
         }
         delete[] score_array;
-        delete score_with_lvl_0;
+        delete[] score_with_lvl_0;
     }
 
 
