@@ -241,19 +241,22 @@ public:
         return SUCCESS;
     }
 
-StatusType GetNegativePercent(int GroupID, int score, int lowerLevel, int higherLevel,double * players) {
-    if (higherLevel < 0) {
+StatusType GetNegativePercent(int GroupID, int score, int lowerLevel, int higherLevel,double * players)
+{
+    if (higherLevel < 0)
+    {
         return FAILURE;
     }
-
-    if (lowerLevel < 0) {
+    if (lowerLevel < 0)
+    {
         lowerLevel = 0;
     }
     AVL<int> *avl;
     AVL<int> *global_avl;
     double num_zero;
     int global_num_zero;
-    if (GroupID == 0) {
+    if (GroupID == 0)
+    {
         avl = system_box.score_array[score];
         global_avl = &system_box.players_in_group;
         num_zero = system_box.score_with_lvl_0[score];
@@ -289,6 +292,7 @@ StatusType GetNegativePercent(int GroupID, int score, int lowerLevel, int higher
         avl->remove(higherLevel);
         global_avl->remove(lowerLevel);
         global_avl->remove(higherLevel);
+
         *players = (count_between_level / global_count_between) * 100;
         return SUCCESS;
     }

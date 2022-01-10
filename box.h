@@ -48,7 +48,6 @@ public:
         for(int i=0; i<=scale; i++)
         {
             merge_trees_inside_box_pointer(i,other->score_array[i]);
-            //delete other->score_array[i];// TODO: if problem in valgrind can be there
         }
         size+=other->size;
         total_level+=other->total_level;
@@ -59,6 +58,7 @@ public:
         }
         delete other;
     }
+
     static void merge(const int * a,const int *b, int *c, int sizeA,int sizeB)
     {
         int ia,ib,ic;

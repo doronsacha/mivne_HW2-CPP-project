@@ -1,6 +1,8 @@
 #ifndef WET2_HASHTABLE_H
 #define WET2_HASHTABLE_H
 #define POSSIBLE_SIZES 28
+#define BIGGEST_PRIME 1610612741
+#define SMALLEST_PRIME 13
 #include <iostream>
 
 
@@ -137,8 +139,8 @@ public:
         int index = hash(id), k=1;
         while(arr[index] != nullptr && arr[index] != tombstone)
         {
-            int id_element= int(arr[index]->getPlayerId()); // needed conversion here
-            if(id_element == id) //TODO: this is not just for the test this is important
+            int id_element= arr[index]->getPlayerId();
+            if(id_element == id)
             {
                 return -1;
             }
@@ -282,7 +284,7 @@ public:
                 return element;
             }
         }
-        return 1610612741;
+        return BIGGEST_PRIME;
     }
 
     int find_lower(int current)
@@ -294,7 +296,7 @@ public:
                 return prime_possible_sizes[i];
             }
         }
-        return 13;
+        return SMALLEST_PRIME;
     }
 };
 

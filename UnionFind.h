@@ -17,9 +17,8 @@ private:
     int universe_size;
     NodeU<T>** elements;
     T ** groups;
-    int scale;
 public:
-    UnionFind(int n, int scale) : universe_size(n+1), scale(scale)
+    UnionFind(int n, int scale) : universe_size(n+1)
     {
         elements = new NodeU<T>*[n+1];//array of pointers to NodeUs
         groups = new T*[n+1]; // array of T's pointers
@@ -80,17 +79,13 @@ public:
         if (box1->size > box2->size)
         {
             box2->head->father = box1->head;
-            //box1->size += box2->size;
             box1->merge_boxes(box2,scale);
-            //delete box2;
             groups[second_group] = box1;
         }
         else if(box1-> size < box2->size)
         {
             box1->head->father = box2->head;
-            //box2->size += box1->size;
             box2->merge_boxes(box1,scale);
-            //delete box1;
             groups[first_group] = box2;
         }
         else
@@ -98,17 +93,13 @@ public:
             if(box1->head->key > box2->head->key)
             {
                 box2->head->father = box1->head;
-                //box1->size += box2->size;
                 box1->merge_boxes(box2,scale);
-                //delete box2;
                 groups[second_group] = box1;
             }
             else
             {
                 box1->head->father = box2->head;
-                //box2->size += box1->size;
                 box2->merge_boxes(box1,scale);
-                //delete box1;
                 groups[first_group] = box2;
             }
         }
