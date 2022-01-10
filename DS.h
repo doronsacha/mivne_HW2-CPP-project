@@ -24,6 +24,7 @@ private:
 public:
     PlayersManager(int k, int scale_) : scale(scale_), uni(UnionFind<Box>(k,scale_)),system_box(Box(scale_)),players_in_ds(HashTable<PlayerInfo*>(new PlayerInfo(-1,-1,-1,-1)))
     {
+        players_in_ds.removeTomb();
         tomb= new PlayerInfo(-1,-1,-1,-1);
         players_in_ds.setTomb(tomb);
     }
@@ -168,6 +169,15 @@ public:
                 return SUCCESS;
             }
         }
+        double res = find_percentage_of_players(avl,global_avl,lowerLevel,higherLevel);
+        if (res == -1)
+            return FAILURE;
+        *players= res;
+        return SUCCESS;
+    }
+
+    static double find_percentage_of_players(AVL<int>* avl,AVL<int>* global_avl,int lowerLevel, int higherLevel)
+    {
         avl->insert(lowerLevel);
         avl->insert(higherLevel);
         global_avl->insert(lowerLevel);
@@ -180,14 +190,13 @@ public:
         double global_count_between=global_high-global_low-1;
         if(global_count_between == 0)
         {
-            return FAILURE;
+            return -1;
         }
         avl->remove(lowerLevel);
         avl->remove(higherLevel);
         global_avl->remove(lowerLevel);
         global_avl->remove(higherLevel);
-        *players=(count_between_level/global_count_between)*100;
-        return SUCCESS;
+        return (count_between_level/global_count_between)*100;
     }
 
     StatusType averageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel)

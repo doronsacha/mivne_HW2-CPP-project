@@ -113,6 +113,7 @@ public:
         x=0;
         players_in_group.fillTree(total_lvl,&x);
         players_in_group.update_tree_extra_data_post_order();
+        delete[] total_lvl;
     }
 
     static void create_empty_tree(AVL<int> & tree, int desired_size)
@@ -149,6 +150,7 @@ public:
         x=0;
         score_array[idx]->fillTree(total_lvls,&x);
         score_array[idx]->update_tree_extra_data_post_order();
+        delete[] total_lvls;
     }
 
     void insert_player_to_box(int score)

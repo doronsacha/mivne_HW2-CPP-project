@@ -1,13 +1,19 @@
+/*
 //
 // Created by tsahiedri on 06/01/2022.
 //
-/*
+
 #include "DS.h"
 #include "avltree.h"
 #include <cassert>
 int main()
 {
-    PlayersManager player(4,6);
+    Box * box = new Box(256);
+    box->score_array[5] = new AVL<int>();
+    delete box;
+
+ */
+/*   PlayersManager player(4,6);
     assert(player.addPlayer(10,2,2)==SUCCESS);
     assert(player.addPlayer(11,2,3)==SUCCESS);
     assert(player.addPlayer(9,0,2)==INVALID_INPUT);
@@ -20,9 +26,12 @@ int main()
     double res=0;
     assert(player.GetPercentOfPlayersWithScoreInBounds(0, 3 ,1, 5,&res)==SUCCESS);
     assert(res==50.00);
-    assert(player.removePlayer(20)==SUCCESS);
+    assert(player.removePlayer(20)==SUCCESS);*//*
+
     //assert(player.averageHighestPlayerLevelByGroup(1,3,&res)==SUCCESS);
-    cout<< res<<endl;
+    */
+/*cout<< res<<endl;*//*
+
     return 0;
 }
 
