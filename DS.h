@@ -14,7 +14,7 @@
 using namespace std;
 
 class PlayersManager
-        {
+{
 private:
     UnionFind<Box> uni;
     Box system_box;
@@ -23,7 +23,7 @@ private:
     int scale;
 public:
     PlayersManager(int k, int scale_) : uni(UnionFind<Box>(k,scale_)), tomb(new PlayerInfo(-1,-1,-1,-1)),
-    players_in_ds(HashTable<PlayerInfo*> (tomb)), system_box(Box(scale_)), scale(scale_)
+                                        players_in_ds(HashTable<PlayerInfo*> (tomb)), system_box(Box(scale_)), scale(scale_)
     {
         players_in_ds.setTomb(tomb);
     }
@@ -119,7 +119,7 @@ public:
         {
             system_box.change_score_in_box(player->getScore(), NewScore, player->getLevel());
             uni.find_team_leader(player->getGroupId())->box->change_score_in_box(player->getScore(), NewScore,
-                                                                                player->getLevel());
+                                                                                 player->getLevel());
         }
         player->setScore(NewScore);
         return SUCCESS;
@@ -157,7 +157,7 @@ public:
         {
             return FAILURE;
         }
-        int size_of_avl=avl->getSize()+system_box.score_with_lvl_0[score];
+        int size_of_avl= avl->getSize() + system_box.score_with_lvl_0[score];
         *players=(count_between_level/size_of_avl)*100;
         return SUCCESS;
     }
@@ -202,11 +202,11 @@ public:
     StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
                                int * LowerBoundPlayers, int * HigherBoundPlayers);
 
-     //should be enough, because each Box Destructor free all the memory he uses,
-     // each tree has only ints so no memory allocated.
-     // we will check it more when we'll be able to run using their main.cpp
-     void Quit()
-     {
+    //should be enough, because each Box Destructor free all the memory he uses,
+    // each tree has only ints so no memory allocated.
+    // we will check it more when we'll be able to run using their main.cpp
+    void Quit()
+    {
         delete tomb;
     }
 
